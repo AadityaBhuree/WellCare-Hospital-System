@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# Database
+hospital_db.sqlite
+*.db
+
+# PDF Records
+Patient_Prescriptions/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Environment
+clinic_pro/.env
