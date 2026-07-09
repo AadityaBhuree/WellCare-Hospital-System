@@ -67,7 +67,9 @@ class ClinicApp(ctk.CTk):
             img = Image.open(ASSETS_DIR / "wellcare.png")
             logo = ctk.CTkImage(dark_image=img, light_image=img, size=(200, 190))
             ctk.CTkLabel(
-                self.upper_frame, text="", image=logo,
+                self.upper_frame,
+                text="",
+                image=logo,
             ).place(anchor="nw", rely=-0.19, relx=0.02)
         except Exception as e:
             logger.warning("Could not load logo: %s", e)
@@ -87,7 +89,9 @@ class ClinicApp(ctk.CTk):
         ).pack(pady=(0, 5))
 
         self.date_label = ctk.CTkLabel(
-            self.upper_frame, font=("", 14), text_color="#e7dada",
+            self.upper_frame,
+            font=("", 14),
+            text_color="#e7dada",
         )
         self.date_label.place(relx=0.98, rely=0.03, anchor="ne")
 
@@ -116,34 +120,40 @@ class ClinicApp(ctk.CTk):
         self.home_screen_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("HomeFrame"),
-            text="HOME", **nav_args,
+            text="HOME",
+            **nav_args,
         )
         self.home_screen_button.grid(column=0, row=0, padx=15)
 
         self.about_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("AboutFrame"),
-            text="ABOUT", **nav_args,
+            text="ABOUT",
+            **nav_args,
         )
         self.login_screen_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("LoginFrame"),
-            text="LOGIN", **nav_args,
+            text="LOGIN",
+            **nav_args,
         )
         self.dashboard_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("DashboardFrame"),
-            text="DASHBOARD", **nav_args,
+            text="DASHBOARD",
+            **nav_args,
         )
         self.new_patient_record_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("PatientEntryFrame"),
-            text="NEW PATIENT", **nav_args,
+            text="NEW PATIENT",
+            **nav_args,
         )
         self.search_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("SearchFrame"),
-            text="SEARCH", **nav_args,
+            text="SEARCH",
+            **nav_args,
         )
         self.logout_button = ctk.CTkButton(
             self.button_frame,
@@ -216,7 +226,9 @@ class ClinicApp(ctk.CTk):
             return
 
         if not self.is_logged_in and frame_class in (
-            DashboardFrame, PatientEntryFrame, SearchFrame,
+            DashboardFrame,
+            PatientEntryFrame,
+            SearchFrame,
         ):
             messagebox.showwarning("Access Denied", "Please login first.")
             return self.show_frame_by_name("LoginFrame")

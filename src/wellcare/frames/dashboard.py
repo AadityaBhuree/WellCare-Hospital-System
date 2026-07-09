@@ -28,15 +28,15 @@ class DashboardFrame(ctk.CTkFrame):
     def _build_ui(self) -> None:
         if self.controller.current_user_role != "admin":
             ctk.CTkLabel(
-                self, text="Unauthorized: Admins Only",
-                text_color="red", font=("", 20),
+                self,
+                text="Unauthorized: Admins Only",
+                text_color="red",
+                font=("", 20),
             ).pack()
             return
 
         header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        header_frame.grid(
-            row=0, column=0, columnspan=2, pady=(20, 10), sticky="ew"
-        )
+        header_frame.grid(row=0, column=0, columnspan=2, pady=(20, 10), sticky="ew")
         header_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         ctk.CTkLabel(
@@ -66,19 +66,29 @@ class DashboardFrame(ctk.CTkFrame):
 
         self.kpi_frame = ctk.CTkFrame(self, fg_color="#1e85da", corner_radius=10)
         self.kpi_frame.grid(
-            row=1, column=0, columnspan=2,
-            pady=10, ipady=10, ipadx=40,
+            row=1,
+            column=0,
+            columnspan=2,
+            pady=10,
+            ipady=10,
+            ipadx=40,
         )
 
         self.chart_container = ctk.CTkFrame(self, fg_color="transparent")
         self.chart_container.grid(
-            row=3, column=0, columnspan=2,
-            pady=(10, 30), padx=20, sticky="nsew",
+            row=3,
+            column=0,
+            columnspan=2,
+            pady=(10, 30),
+            padx=20,
+            sticky="nsew",
         )
 
         ctk.CTkLabel(
-            self, text="Graphical Representation",
-            font=("Roboto", 24, "bold"), text_color="#1e3c72",
+            self,
+            text="Graphical Representation",
+            font=("Roboto", 24, "bold"),
+            text_color="#1e3c72",
         ).grid(row=2, column=0, columnspan=2, pady=(30, 0))
 
         self._render_charts()
@@ -98,28 +108,38 @@ class DashboardFrame(ctk.CTkFrame):
         total_card = ctk.CTkFrame(self.kpi_frame, fg_color="transparent")
         total_card.grid(row=0, column=0, padx=40, pady=10)
         ctk.CTkLabel(
-            total_card, text="Total Patients",
-            font=("Roboto", 18), text_color="white",
+            total_card,
+            text="Total Patients",
+            font=("Roboto", 18),
+            text_color="white",
         ).pack()
         ctk.CTkLabel(
-            total_card, text=str(stats["total"]),
-            font=("Roboto", 45, "bold"), text_color="white",
+            total_card,
+            text=str(stats["total"]),
+            font=("Roboto", 45, "bold"),
+            text_color="white",
         ).pack()
 
         today_card = ctk.CTkFrame(self.kpi_frame, fg_color="transparent")
         today_card.grid(row=0, column=1, padx=40, pady=10)
         ctk.CTkLabel(
-            today_card, text="New Patients (Today)",
-            font=("Roboto", 18), text_color="white",
+            today_card,
+            text="New Patients (Today)",
+            font=("Roboto", 18),
+            text_color="white",
         ).pack()
         ctk.CTkLabel(
-            today_card, text=str(stats["today"]),
-            font=("Roboto", 45, "bold"), text_color=COLOR_WARNING,
+            today_card,
+            text=str(stats["today"]),
+            font=("Roboto", 45, "bold"),
+            text_color=COLOR_WARNING,
         ).pack()
 
         if stats["total"] == 0:
             ctk.CTkLabel(
-                self.chart_container, text="No patients in database yet.", font=("Roboto", 18),
+                self.chart_container,
+                text="No patients in database yet.",
+                font=("Roboto", 18),
             ).pack(pady=100)
             return
 
@@ -136,13 +156,12 @@ class DashboardFrame(ctk.CTkFrame):
             fig.tight_layout(pad=3.0)
 
             valid_genders = [
-                (g[0] if g[0] not in ("", "Select") else "Unknown", g[1])
-                for g in stats["genders"]
+                (g[0] if g[0] not in ("", "Select") else "Unknown", g[1]) for g in stats["genders"]
             ]
             labels1 = [item[0] for item in valid_genders]
             sizes1 = [item[1] for item in valid_genders]
             if sizes1:
-                colors = sns.color_palette("pastel")[0:len(sizes1)]
+                colors = sns.color_palette("pastel")[0 : len(sizes1)]
                 ax1.pie(sizes1, labels=labels1, autopct="%1.1f%%", startangle=90, colors=colors)
                 ax1.set_title("Patient Demographics")
                 ax1.axis("equal")
@@ -165,7 +184,8 @@ class DashboardFrame(ctk.CTkFrame):
                 sns.barplot(
                     x=list(age_groups.keys()),
                     y=list(age_groups.values()),
-                    ax=ax2, palette="viridis",
+                    ax=ax2,
+                    palette="viridis",
                 )
                 ax2.set_title("Age Categories")
                 ax2.set_ylabel("Count")
@@ -175,8 +195,7 @@ class DashboardFrame(ctk.CTkFrame):
             fig.tight_layout(pad=3.0)
 
             valid_bloods = [
-                (b[0] if b[0] not in ("", "Select") else "Unk", b[1])
-                for b in stats["blood_groups"]
+                (b[0] if b[0] not in ("", "Select") else "Unk", b[1]) for b in stats["blood_groups"]
             ]
             labels2 = [item[0] for item in valid_bloods]
             values2 = [item[1] for item in valid_bloods]
@@ -190,7 +209,8 @@ class DashboardFrame(ctk.CTkFrame):
                 sns.barplot(
                     x=[x[0].capitalize() for x in top_symp],
                     y=[x[1] for x in top_symp],
-                    ax=ax2, palette="rocket",
+                    ax=ax2,
+                    palette="rocket",
                 )
                 ax2.set_title("Top 5 Report Keywords")
                 ax2.set_ylabel("Frequency")
@@ -217,8 +237,14 @@ class DashboardFrame(ctk.CTkFrame):
                 recent_text += f"ID: {r[0]} | {r[1]} {r[2]} | {r[3]}\n"
 
             ax2.text(
-                0.1, 0.9, recent_text, ha="left", va="top",
-                fontname="Courier New", fontsize=10, transform=ax2.transAxes,
+                0.1,
+                0.9,
+                recent_text,
+                ha="left",
+                va="top",
+                fontname="Courier New",
+                fontsize=10,
+                transform=ax2.transAxes,
             )
             ax2.set_title("Last 5 Patients")
             ax2.set_axis_off()

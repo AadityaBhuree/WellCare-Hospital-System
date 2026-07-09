@@ -18,7 +18,8 @@ class SearchFrame(ctk.CTkFrame):
 
     def _build_ui(self) -> None:
         ctk.CTkLabel(
-            self, text="Search Patient Record",
+            self,
+            text="Search Patient Record",
             font=("Courier New", 30, "bold"),
         ).grid(row=0, column=0, pady=30)
 
@@ -29,15 +30,18 @@ class SearchFrame(ctk.CTkFrame):
         self.search_entry.pack(side="left", padx=10)
 
         ctk.CTkButton(
-            search_frame, text="Search",
+            search_frame,
+            text="Search",
             command=self._search_action,
             fg_color="#1e85da",
         ).pack(side="left", padx=10)
 
         ctk.CTkButton(
-            search_frame, text="Show All",
+            search_frame,
+            text="Show All",
             command=lambda: self._search_action(show_all=True),
-            fg_color="#388e3c", hover_color="#2e7d32",
+            fg_color="#388e3c",
+            hover_color="#2e7d32",
         ).pack(side="left", padx=10)
 
         # Admin: delete controls
@@ -46,21 +50,30 @@ class SearchFrame(ctk.CTkFrame):
             action_frame.grid(row=2, column=0, pady=10)
 
             self.delete_id_entry = ctk.CTkEntry(
-                action_frame, placeholder_text="Patient ID to Delete", width=150,
+                action_frame,
+                placeholder_text="Patient ID to Delete",
+                width=150,
             )
             self.delete_id_entry.pack(side="left", padx=10)
 
             ctk.CTkButton(
-                action_frame, text="Delete Patient",
-                fg_color="red", hover_color="#8b0000",
+                action_frame,
+                text="Delete Patient",
+                fg_color="red",
+                hover_color="#8b0000",
                 command=self._delete_action,
             ).pack(side="left", padx=10)
 
         self.result_box = ctk.CTkTextbox(
-            self, width=800, height=400, font=("Courier", 14),
+            self,
+            width=800,
+            height=400,
+            font=("Courier", 14),
         )
         self.result_box.grid(
-            row=3, column=0, pady=30,
+            row=3,
+            column=0,
+            pady=30,
         )
         self.result_box.insert(
             "1.0",

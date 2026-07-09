@@ -51,13 +51,16 @@ class Database:
         if self.cur is None:
             return False
         try:
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 INSERT INTO patients(
                     first_name, last_name, age, gender, blood_group, weight,
                     mobile, email, address, pincode, symptoms
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, data)
+            """,
+                data,
+            )
             self.conn.commit()
             return True
         except Exception as e:
@@ -67,11 +70,14 @@ class Database:
     def search_patient(self, keyword: str) -> list[tuple[Any, ...]]:
         if self.cur is None:
             return []
-        self.cur.execute("""
+        self.cur.execute(
+            """
             SELECT id, first_name, last_name, age, mobile, symptoms
             FROM patients
             WHERE first_name LIKE ? OR last_name LIKE ?
-        """, (f"%{keyword}%", f"%{keyword}%"))
+        """,
+            (f"%{keyword}%", f"%{keyword}%"),
+        )
         return self.cur.fetchall()
 
     def delete_patient(self, patient_id: int | str) -> bool:
@@ -126,8 +132,7 @@ class Database:
         stats["trends"] = self.cur.fetchall()
 
         self.cur.execute(
-            "SELECT id, first_name, last_name, mobile"
-            " FROM patients ORDER BY id DESC LIMIT 5"
+            "SELECT id, first_name, last_name, mobile FROM patients ORDER BY id DESC LIMIT 5"
         )
         stats["recent"] = self.cur.fetchall()
 

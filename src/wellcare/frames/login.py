@@ -5,8 +5,8 @@ Login screen with authentication logic.
 from tkinter import messagebox
 
 import customtkinter as ctk
-from src.wellcare.config import ADMIN_PASSWORD, ADMIN_USERNAME, STAFF_PASSWORD, STAFF_USERNAME
 from src.wellcare.logger import logger
+from src.wellcare.utils.auth import authenticate_user
 
 
 class LoginFrame(ctk.CTkFrame):
@@ -24,13 +24,13 @@ class LoginFrame(ctk.CTkFrame):
             self,
             text="Clinic System Login",
             font=("", 28, "bold"),
-        ).grid(
-            pady=(50, 40), columnspan=2, column=0, row=0
-        )
+        ).grid(pady=(50, 40), columnspan=2, column=0, row=0)
 
         ctk.CTkLabel(
-            self, text="ID:",
-            font=("Roboto", 20), text_color="#3D3D3D",
+            self,
+            text="ID:",
+            font=("Roboto", 20),
+            text_color="#3D3D3D",
         ).grid(row=2, column=0, padx=10, pady=15, sticky="e")
 
         self.id_entry = ctk.CTkEntry(
@@ -41,18 +41,19 @@ class LoginFrame(ctk.CTkFrame):
         self.id_entry.grid(row=2, column=1, padx=10, pady=15, sticky="w")
 
         ctk.CTkLabel(
-            self, text="Password:",
-            font=("Roboto", 20), text_color="#3D3D3D",
+            self,
+            text="Password:",
+            font=("Roboto", 20),
+            text_color="#3D3D3D",
         ).grid(row=3, column=0, padx=10, pady=15, sticky="e")
 
         self.password_entry = ctk.CTkEntry(
             self,
             placeholder_text="Enter Password ('123')",
-            width=250, show="*",
+            width=250,
+            show="*",
         )
-        self.password_entry.grid(
-            row=3, column=1, padx=10, pady=15, sticky="w"
-        )
+        self.password_entry.grid(row=3, column=1, padx=10, pady=15, sticky="w")
 
         ctk.CTkButton(
             self,
@@ -67,7 +68,9 @@ class LoginFrame(ctk.CTkFrame):
         uid = self.id_entry.get().strip()
         pwd = self.password_entry.get().strip()
 
-        if uid == ADMIN_USERNAME and pwd == ADMIN_PASSWORD:
+        role = authenticate_user(uid, pwd)
+
+        if role == "admin":
             self.controller.is_logged_in = True
             self.controller.current_user_role = "admin"
             self.controller.update_nav_buttons()
@@ -77,7 +80,7 @@ class LoginFrame(ctk.CTkFrame):
             )
             self.controller.show_frame_by_name("HomeFrame")
 
-        elif uid == STAFF_USERNAME and pwd == STAFF_PASSWORD:
+        elif role == "staff":
             self.controller.is_logged_in = True
             self.controller.current_user_role = "staff"
             self.controller.update_nav_buttons()
@@ -89,6 +92,4 @@ class LoginFrame(ctk.CTkFrame):
 
         else:
             logger.warning("Failed login attempt: %s", uid)
-            messagebox.showwarning(
-                "Warning", "Invalid User ID or Password!"
-            )
+            messagebox.showwarning("Warning", "Invalid User ID or Password!")

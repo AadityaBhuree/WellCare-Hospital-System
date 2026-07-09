@@ -1,11 +1,18 @@
 """
 Application configuration and constants.
 
-All tunable settings are centralized here. Sensitive values (credentials)
-will be moved to environment variables in a later phase.
+Settings are loaded from environment variables via python-dotenv,
+with sensible defaults for development.
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+# ── Load .env file ─────────────────────────────────────────────────────────
+ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(dotenv_path=ENV_PATH)
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -14,13 +21,13 @@ PRESCRIPTIONS_DIR = PROJECT_ROOT / "Patient_Prescriptions"
 DATABASE_PATH = PROJECT_ROOT / "clinic.db"
 
 # ── Application ────────────────────────────────────────────────────────────
-APP_TITLE = "WellCare Hospital Patient Management"
-APP_GEOMETRY = "1440x1024"
-APP_MIN_WIDTH = 900
-APP_MIN_HEIGHT = 700
+APP_TITLE = os.getenv("APP_TITLE", "WellCare Hospital Patient Management")
+APP_GEOMETRY = os.getenv("APP_GEOMETRY", "1440x1024")
+APP_MIN_WIDTH = int(os.getenv("APP_MIN_WIDTH", "900"))
+APP_MIN_HEIGHT = int(os.getenv("APP_MIN_HEIGHT", "700"))
 
-DEFAULT_APPEARANCE_MODE = "Light"  # "Light" | "Dark"
-DEFAULT_COLOR_THEME = "blue"
+DEFAULT_APPEARANCE_MODE = os.getenv("APPEARANCE_MODE", "Light")  # "Light" | "Dark"
+DEFAULT_COLOR_THEME = os.getenv("COLOR_THEME", "blue")
 
 # ── Colors ─────────────────────────────────────────────────────────────────
 COLOR_PRIMARY = "#1e85da"
@@ -32,11 +39,11 @@ COLOR_SUCCESS = "#52bb6c"
 COLOR_DANGER = "#e25353"
 COLOR_WARNING = "#ffd700"
 
-# ── Credentials (hardcoded defaults — will be moved to env in Phase 3) ──
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "123"
-STAFF_USERNAME = "staff"
-STAFF_PASSWORD = "123"
+# ── Credentials (loaded from .env) ────────────────────────────────────────
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH", "")
+STAFF_USERNAME = os.getenv("STAFF_USERNAME", "staff")
+STAFF_PASSWORD_HASH = os.getenv("STAFF_PASSWORD_HASH", "")
 
 # ── Dashboard ──────────────────────────────────────────────────────────────
-AUTO_REFRESH_INTERVAL_MS = 10_000  # 10 seconds
+AUTO_REFRESH_INTERVAL_MS = int(os.getenv("AUTO_REFRESH_INTERVAL_MS", "10000"))  # 10 seconds

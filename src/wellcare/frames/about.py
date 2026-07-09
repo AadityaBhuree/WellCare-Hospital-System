@@ -1,6 +1,7 @@
 """
 About screen frame with hospital information.
 """
+
 import logging
 import webbrowser
 
@@ -29,7 +30,10 @@ class AboutFrame(ctk.CTkFrame):
                 size=(200, 200),
             )
             ctk.CTkLabel(self, text="", image=logo).grid(
-                columnspan=2, row=0, column=0, pady=(10, 10),
+                columnspan=2,
+                row=0,
+                column=0,
+                pady=(10, 10),
             )
         except Exception as exc:
             logger.debug("Could not load logo: %s", exc)
@@ -50,8 +54,10 @@ class AboutFrame(ctk.CTkFrame):
         )
 
         ctk.CTkLabel(
-            self, text=info_text,
-            font=("Roboto", 18), justify="center",
+            self,
+            text=info_text,
+            font=("Roboto", 18),
+            justify="center",
         ).grid(columnspan=2, row=2, column=0, pady=20)
 
         ctk.CTkButton(
