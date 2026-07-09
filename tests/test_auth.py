@@ -45,8 +45,8 @@ class TestVerifyPassword:
 class TestAuthenticateUser:
     """Tests for authenticate_user.
 
-    Note: These tests rely on the .env file being loaded. For CI,
-    set the env vars explicitly.
+    Environment variables are set by ``tests/conftest.py``, making
+    these tests CI-safe without a real ``.env`` file.
     """
 
     def test_authenticate_valid_admin(self) -> None:

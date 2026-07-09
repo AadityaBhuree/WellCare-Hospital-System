@@ -1,21 +1,9 @@
-"""Tests for Database operations using an in-memory SQLite database."""
+"""Tests for Database operations using an in-memory SQLite database.
 
-import pytest
+The ``db`` fixture is provided by ``tests/conftest.py``.
+"""
 
 from src.wellcare.database import Database
-
-
-@pytest.fixture
-def db() -> Database:
-    """Create a fresh in-memory Database instance for each test."""
-    database = Database()
-    # Override with in-memory database for testing
-    import sqlite3
-
-    database.conn = sqlite3.connect(":memory:", check_same_thread=False)
-    database.cur = database.conn.cursor()
-    database._create_table()
-    return database
 
 
 class TestDatabase:
