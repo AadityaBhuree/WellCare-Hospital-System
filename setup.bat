@@ -17,7 +17,8 @@ pip install -r requirements.txt
 
 echo 5. Setup Complete!
 echo.
-echo To run the application, type: 
-echo python main.py
+echo To run the application, type:
+echo   python main.py
+echo   (or) python -m src.wellcare
 echo.
 pause

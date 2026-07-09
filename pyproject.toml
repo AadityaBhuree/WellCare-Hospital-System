@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wellcare-hospital-system"
+version = "1.0.0"
+description = "A professional, object-oriented Clinic Management System with real-time analytics"
+readme = "README.md"
+authors = [
+    {name = "Aditya Bhure", email = "adityabhure03@gmail.com"},
+]
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "customtkinter>=5.2.0",
+    "fpdf2>=2.5.0",
+    "Pillow>=9.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.12.0",
+]
+
+[project.scripts]
+wellcare = "src.wellcare.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

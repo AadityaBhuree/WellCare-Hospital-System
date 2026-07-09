@@ -107,3 +107,8 @@ Patient_Prescriptions/
 
 # Project progress
 .progress
+
+# Windows reserved names
+nul
+NUL
+Nul

@@ -1,0 +1,81 @@
+# ============================================================
+# WELLCARE HOSPITAL SYSTEM - Improvement Progress Tracker
+# ============================================================
+# When resuming, read this file to know exactly what's done.
+# Send "start" to continue from where you left off.
+# ============================================================
+
+LAST_UPDATED: 2026-07-09
+
+## PHASE 0: Fix Git Divergence ✅
+- [x] Analyze remote divergence
+- [x] Pull remote to resolve divergence
+- [x] Verify push works
+
+## PHASE 1: Project Structure Restructure (src/ layout) ✅
+STATUS: ✅ COMPLETED
+- [x] Pull remote to resolve divergence
+- [x] Create directory structure (src/wellcare/, tests/)
+- [x] Create pyproject.toml
+- [x] Split database.py from main.py
+- [x] Split config.py
+- [x] Split logger.py
+- [x] Split frames/ package (home, about, login, dashboard, patient_entry, search)
+- [x] Split app.py (ClinicApp controller)
+- [x] Create __main__.py entry point
+- [x] Split utils/ package (pdf, validators)
+- [x] Update requirements.txt (fix encoding)
+- [x] Update .gitignore
+- [x] Create .env.example, .python-version
+- [x] Update setup.bat
+- [x] Verify all modules pass syntax validation
+- [x] Commit and push
+
+## PHASE 2: Code Quality & Configuration
+STATUS: ⬜ PENDING
+- [ ] Add comprehensive type hints across all modules
+- [ ] Add proper logging
+- [ ] Extract config to environment variables
+- [ ] Add proper error handling
+- [ ] Add ruff/pyproject.toml linting config
+- [ ] Add pre-commit config
+- [ ] Verify app runs correctly
+- [ ] Commit and push
+
+## PHASE 3: Security Improvements
+STATUS: ⬜ PENDING
+- [ ] Move credentials to config/.env
+- [ ] Add bcrypt password hashing
+- [ ] Secure database path handling
+- [ ] Verify app runs correctly
+- [ ] Commit and push
+
+## PHASE 4: Testing
+STATUS: ⬜ PENDING
+- [ ] Add pytest config
+- [ ] Write database tests
+- [ ] Write validation tests
+- [ ] Write app integration tests
+- [ ] Run tests, ensure pass
+- [ ] Commit and push
+
+## PHASE 5: CI/CD Pipeline
+STATUS: ⬜ PENDING
+- [ ] Create GitHub Actions test workflow
+- [ ] Create GitHub Actions build workflow (PyInstaller)
+- [ ] Add badges to README
+- [ ] Commit and push
+
+## PHASE 6: Documentation
+STATUS: ⬜ PENDING
+- [ ] Rewrite README.md with full docs
+- [ ] Add CHANGELOG.md
+- [ ] Add CONTRIBUTING.md
+- [ ] Add comprehensive docstrings
+- [ ] Commit and push
+
+## PHASE 7: Final Polish
+STATUS: ⬜ PENDING
+- [ ] Full application test run
+- [ ] Code review pass
+- [ ] Final commit and push
