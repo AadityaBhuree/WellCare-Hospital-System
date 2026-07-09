@@ -1,13 +1,14 @@
 """
 Home screen frame with hospital information and service overview.
 """
-
+import logging
 import os
 
 import customtkinter as ctk
 from PIL import Image
-
 from src.wellcare.config import ASSETS_DIR
+
+logger = logging.getLogger(__name__)
 
 
 class HomeFrame(ctk.CTkFrame):
@@ -30,9 +31,11 @@ class HomeFrame(ctk.CTkFrame):
                 size=(350, 350),
             )
             logo_label = ctk.CTkLabel(self, text="", image=big_logo)
-            logo_label.grid(row=1, column=0, columnspan=2, pady=(10, 0))
-        except Exception:
-            pass
+            logo_label.grid(
+                row=1, column=0, columnspan=2, pady=(10, 0)
+            )
+        except Exception as exc:
+            logger.debug("Could not load logo: %s", exc)
 
         # Hospital Name & Tagline
         ctk.CTkLabel(
@@ -51,7 +54,9 @@ class HomeFrame(ctk.CTkFrame):
 
         # ── Info Bar ───────────────────────────────────────────
         info_frame = ctk.CTkFrame(self, fg_color="#edf5fd", corner_radius=5)
-        info_frame.grid(row=4, column=0, padx=5, pady=20, columnspan=2, sticky="ew")
+        info_frame.grid(
+            row=4, column=0, padx=5, pady=20, columnspan=2, sticky="ew"
+        )
         info_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         info_font = ("Roboto", 18, "bold")
@@ -86,7 +91,9 @@ class HomeFrame(ctk.CTkFrame):
             self, fg_color="#ffffff", corner_radius=5,
             border_width=1, border_color="#acb0b3",
         )
-        self.services_frame.grid(row=6, column=0, padx=5, pady=10, columnspan=2, sticky="ew")
+        self.services_frame.grid(
+            row=6, column=0, padx=5, pady=10, columnspan=2, sticky="ew"
+        )
         for i in range(6):
             self.services_frame.grid_columnconfigure(i, weight=1)
 
@@ -115,7 +122,10 @@ class HomeFrame(ctk.CTkFrame):
             self, fg_color="#d4e2ff", corner_radius=15,
             border_width=2, border_color="#cfebf8",
         )
-        self.service_info_frame.grid(row=7, column=0, columnspan=2, sticky="ew", padx=30, pady=(10, 50))
+        self.service_info_frame.grid(
+            row=7, column=0, columnspan=2,
+            sticky="ew", padx=30, pady=(10, 50),
+        )
         self.service_info_frame.grid_columnconfigure((0, 1), weight=1)
 
         # Doctor Section
@@ -127,7 +137,10 @@ class HomeFrame(ctk.CTkFrame):
         ).grid(row=8, column=0, columnspan=2, pady=(30, 10))
 
         self.lower_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self.lower_frame.grid(row=9, column=0, columnspan=2, sticky="ew", padx=30, pady=(10, 50))
+        self.lower_frame.grid(
+            row=9, column=0, columnspan=2,
+            sticky="ew", padx=30, pady=(10, 50),
+        )
         self.lower_frame.grid_columnconfigure((0, 1), weight=1)
 
         doctors = [
@@ -189,7 +202,10 @@ class HomeFrame(ctk.CTkFrame):
             self, fg_color="#fff1f1", corner_radius=15,
             border_width=3, border_color="#ff4d4d",
         )
-        self.emergency_frame.grid(row=10, column=0, columnspan=2, sticky="ew", padx=30, pady=(20, 60))
+        self.emergency_frame.grid(
+            row=10, column=0, columnspan=2,
+            sticky="ew", padx=30, pady=(20, 60),
+        )
         self.emergency_frame.grid_columnconfigure(0, weight=2)
         self.emergency_frame.grid_columnconfigure(1, weight=3)
 
@@ -271,47 +287,68 @@ class HomeFrame(ctk.CTkFrame):
                     ctk.CTkLabel(self.service_info_frame, text="", image=ctk_image).grid(
                         row=0, column=1, padx=20, pady=20, sticky="e",
                     )
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("Could not load service image: %s", exc)
+
+    CARD_SERVICES = [
+        ("❤️ 24/7 Cardiac Care Unit",
+         "• Advanced cardiac monitoring systems\n"
+         "• Emergency heart attack treatment (24/7)\n"
+         "• ECG, Echo & cardiac life support\n"
+         "• Dedicated cardiac specialists",
+         "cardiology.jpg"),
+        ("🧠 Neurology & Stroke Unit",
+         "• Stroke emergency management\n"
+         "• Treatment for migraines & epilepsy\n"
+         "• Nerve disorder diagnostics\n"
+         "• MRI/CT integration with neuro-care",
+         "neurology.jpg"),
+        ("🔬 Advanced Diagnostics (MRI/CT)",
+         "• MRI, CT Scan, X-Ray, and Ultrasound\n"
+         "• High-resolution, fast imaging\n"
+         "• Quick report generation\n"
+         "• Machine-assisted accurate diagnosis",
+         "diagnostics.jpg"),
+        ("👶 Maternity & Pediatric Care",
+         "• Prenatal & antenatal checkups\n"
+         "• Delivery support with experts\n"
+         "• Neonatal ICU (NICU)\n"
+         "• Pediatric specialists for child care",
+         "maternity.jpg"),
+        ("🦴 Orthopedics & Trauma Care",
+         "• Treatment for fractures & joint pain\n"
+         "• Sports injury management\n"
+         "• Spinal problem diagnosis\n"
+         "• 24/7 trauma emergency care",
+         "orthopedics.jpg"),
+        ("💊 Pharmacy & Laboratory",
+         "• 24/7 in-house pharmacy\n"
+         "• Instant blood & urine tests\n"
+         "• Accurate laboratory reporting\n"
+         "• All medicines always in stock",
+         "pathology.jpg"),
+    ]
 
     def _show_cardiac_info(self) -> None:
-        self._update_service_info(
-            "❤️ 24/7 Cardiac Care Unit",
-            "• Advanced cardiac monitoring systems\n• Emergency heart attack treatment (24/7)\n• ECG, Echo & cardiac life support\n• Dedicated cardiac specialists",
-            "cardiology.jpg",
-        )
+        name, details, img = self.CARD_SERVICES[0]
+        self._update_service_info(name, details, img)
 
     def _show_neuro_info(self) -> None:
-        self._update_service_info(
-            "🧠 Neurology & Stroke Unit",
-            "• Stroke emergency management\n• Treatment for migraines & epilepsy\n• Nerve disorder diagnostics\n• MRI/CT integration with neuro-care",
-            "neurology.jpg",
-        )
+        name, details, img = self.CARD_SERVICES[1]
+        self._update_service_info(name, details, img)
 
     def _show_diagnostic_info(self) -> None:
-        self._update_service_info(
-            "🔬 Advanced Diagnostics (MRI/CT)",
-            "• MRI, CT Scan, X-Ray, and Ultrasound\n• High-resolution, fast imaging\n• Quick report generation\n• Machine-assisted accurate diagnosis",
-            "diagnostics.jpg",
-        )
+        name, details, img = self.CARD_SERVICES[2]
+        self._update_service_info(name, details, img)
 
     def _show_maternity_info(self) -> None:
-        self._update_service_info(
-            "👶 Maternity & Pediatric Care",
-            "• Prenatal & antenatal checkups\n• Delivery support with experts\n• Neonatal ICU (NICU)\n• Pediatric specialists for child care",
-            "maternity.jpg",
-        )
+        name, details, img = self.CARD_SERVICES[3]
+        self._update_service_info(name, details, img)
 
     def _show_ortho_info(self) -> None:
-        self._update_service_info(
-            "🦴 Orthopedics & Trauma Care",
-            "• Treatment for fractures & joint pain\n• Sports injury management\n• Spinal problem diagnosis\n• 24/7 trauma emergency care",
-            "orthopedics.jpg",
-        )
+        name, details, img = self.CARD_SERVICES[4]
+        self._update_service_info(name, details, img)
 
     def _show_lab_info(self) -> None:
-        self._update_service_info(
-            "💊 Pharmacy & Laboratory",
-            "• 24/7 in-house pharmacy\n• Instant blood & urine tests\n• Accurate laboratory reporting\n• All medicines always in stock",
-            "pathology.jpg",
-        )
+        name, details, img = self.CARD_SERVICES[5]
+        self._update_service_info(name, details, img)

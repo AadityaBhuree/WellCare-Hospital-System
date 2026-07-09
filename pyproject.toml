@@ -29,10 +29,21 @@ where = ["src"]
 [tool.ruff]
 target-version = "py38"
 line-length = 100
+src = ["src"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W"]
+select = ["E", "F", "I", "N", "W", "UP", "S", "SIM"]
+ignore = ["SIM117", "SIM108", "S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]

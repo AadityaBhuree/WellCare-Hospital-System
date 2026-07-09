@@ -9,8 +9,6 @@ from tkinter import messagebox
 
 import customtkinter as ctk
 from PIL import Image
-
-from src.wellcare import __version__
 from src.wellcare.config import (
     APP_GEOMETRY,
     APP_MIN_HEIGHT,

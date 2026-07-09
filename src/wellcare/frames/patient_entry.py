@@ -2,10 +2,8 @@
 Patient entry form for creating and saving patient records with PDF generation.
 """
 
-from tkinter import messagebox
 
 import customtkinter as ctk
-
 from src.wellcare.logger import logger
 from src.wellcare.utils.pdf import generate_prescription
 from src.wellcare.utils.validators import validate_patient_input
@@ -35,7 +33,8 @@ class PatientEntryFrame(ctk.CTkFrame):
             ("Last Name", "last_name", ctk.CTkEntry),
             ("Age", "age", ctk.CTkComboBox, [str(i) for i in range(1, 121)]),
             ("Gender", "gender", ctk.CTkComboBox, ["Male", "Female", "Other"]),
-            ("Blood Group", "blood", ctk.CTkComboBox, ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]),
+            ("Blood Group", "blood", ctk.CTkComboBox,
+             ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]),
             ("Weight (KG)", "weight", ctk.CTkEntry),
             ("Symptoms", "symptoms", ctk.CTkTextbox),
             ("Address", "address", ctk.CTkTextbox),
@@ -55,12 +54,22 @@ class PatientEntryFrame(ctk.CTkFrame):
             ).grid(row=row_idx, column=0, padx=100, pady=10, sticky="e")
 
             if widget_type == ctk.CTkComboBox:
-                widget = widget_type(self, values=field[3], border_color="#dddddd", width=250)  # type: ignore
+                widget = widget_type(
+                    self, values=field[3],
+                    border_color="#dddddd", width=250,
+                )  # type: ignore
                 widget.set("Select Age" if label_text == "Age" else "Select")
             elif widget_type == ctk.CTkTextbox:
-                widget = widget_type(self, border_color="#b1acac", width=250, height=80, border_width=1)
+                widget = widget_type(
+                    self, border_color="#b1acac",
+                    width=250, height=80, border_width=1,
+                )
             else:
-                widget = widget_type(self, border_color="#dddddd", placeholder_text=f"Enter {label_text}", width=250, border_width=1)
+                widget = widget_type(
+                    self, border_color="#dddddd",
+                    placeholder_text=f"Enter {label_text}",
+                    width=250, border_width=1,
+                )
 
             widget.grid(row=row_idx, column=1, padx=10, pady=10, sticky="w")
             self.inputs[var_name] = widget

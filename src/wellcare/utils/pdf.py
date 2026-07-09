@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional
 
 from fpdf import FPDF
-
 from src.wellcare.config import PRESCRIPTIONS_DIR
 from src.wellcare.logger import logger
 

@@ -5,7 +5,8 @@ Login screen with authentication logic.
 from tkinter import messagebox
 
 import customtkinter as ctk
-from src.wellcare.config import ADMIN_USERNAME, ADMIN_PASSWORD, STAFF_USERNAME, STAFF_PASSWORD
+from src.wellcare.config import ADMIN_PASSWORD, ADMIN_USERNAME, STAFF_PASSWORD, STAFF_USERNAME
+from src.wellcare.logger import logger
 
 
 class LoginFrame(ctk.CTkFrame):
@@ -23,25 +24,35 @@ class LoginFrame(ctk.CTkFrame):
             self,
             text="Clinic System Login",
             font=("", 28, "bold"),
-        ).grid(pady=(50, 40), columnspan=2, column=0, row=0)
+        ).grid(
+            pady=(50, 40), columnspan=2, column=0, row=0
+        )
 
         ctk.CTkLabel(
-            self, text="ID:", font=("Roboto", 20), text_color="#3D3D3D",
+            self, text="ID:",
+            font=("Roboto", 20), text_color="#3D3D3D",
         ).grid(row=2, column=0, padx=10, pady=15, sticky="e")
 
         self.id_entry = ctk.CTkEntry(
-            self, placeholder_text="Admin ('admin') or Staff ('staff')", width=250,
+            self,
+            placeholder_text="Admin ('admin') or Staff ('staff')",
+            width=250,
         )
         self.id_entry.grid(row=2, column=1, padx=10, pady=15, sticky="w")
 
         ctk.CTkLabel(
-            self, text="Password:", font=("Roboto", 20), text_color="#3D3D3D",
+            self, text="Password:",
+            font=("Roboto", 20), text_color="#3D3D3D",
         ).grid(row=3, column=0, padx=10, pady=15, sticky="e")
 
         self.password_entry = ctk.CTkEntry(
-            self, placeholder_text="Enter Password ('123')", width=250, show="*",
+            self,
+            placeholder_text="Enter Password ('123')",
+            width=250, show="*",
         )
-        self.password_entry.grid(row=3, column=1, padx=10, pady=15, sticky="w")
+        self.password_entry.grid(
+            row=3, column=1, padx=10, pady=15, sticky="w"
+        )
 
         ctk.CTkButton(
             self,
@@ -60,15 +71,24 @@ class LoginFrame(ctk.CTkFrame):
             self.controller.is_logged_in = True
             self.controller.current_user_role = "admin"
             self.controller.update_nav_buttons()
-            messagebox.showinfo("Admin Login", "Welcome Administrator!\nFull system dashboard unlocked.")
+            messagebox.showinfo(
+                "Admin Login",
+                "Welcome Administrator!\nFull system dashboard unlocked.",
+            )
             self.controller.show_frame_by_name("HomeFrame")
 
         elif uid == STAFF_USERNAME and pwd == STAFF_PASSWORD:
             self.controller.is_logged_in = True
             self.controller.current_user_role = "staff"
             self.controller.update_nav_buttons()
-            messagebox.showinfo("Staff Login", "Login Successful. Redirecting to Home.")
+            messagebox.showinfo(
+                "Staff Login",
+                "Login Successful. Redirecting to Home.",
+            )
             self.controller.show_frame_by_name("HomeFrame")
 
         else:
-            messagebox.showwarning("Warning", "Invalid User ID or Password!")
+            logger.warning("Failed login attempt: %s", uid)
+            messagebox.showwarning(
+                "Warning", "Invalid User ID or Password!"
+            )

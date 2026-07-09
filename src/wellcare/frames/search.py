@@ -59,8 +59,13 @@ class SearchFrame(ctk.CTkFrame):
         self.result_box = ctk.CTkTextbox(
             self, width=800, height=400, font=("Courier", 14),
         )
-        self.result_box.grid(row=3, column=0, pady=30)
-        self.result_box.insert("1.0", "Search by entering the patient's first or last name.")
+        self.result_box.grid(
+            row=3, column=0, pady=30,
+        )
+        self.result_box.insert(
+            "1.0",
+            "Search by entering the patient's first or last name.",
+        )
         self.result_box.configure(state="disabled")
 
     def _search_action(self, show_all: bool = False) -> None:
@@ -87,11 +92,12 @@ class SearchFrame(ctk.CTkFrame):
                     mobile = str(r[4]) if r[4] is not None else ""
                     symptoms = str(r[5]) if r[5] is not None else ""
 
-                    self.result_box.insert(
-                        "end",
-                        f"ID: {rid:<4} | Name: {fname} {lname:<15} | Age: {age:<4} | Mobile: {mobile}\n"
-                        f"Symptoms: {symptoms}\n{'-' * 60}\n",
+                    line = (
+                        f"ID: {rid:<4} | Name: {fname} {lname:<15}"
+                        f" | Age: {age:<4} | Mobile: {mobile}\n"
+                        f"Symptoms: {symptoms}\n{'─' * 60}\n"
                     )
+                    self.result_box.insert("end", line)
             else:
                 self.result_box.insert("end", "No patient found.")
 

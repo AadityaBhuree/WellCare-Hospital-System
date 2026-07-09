@@ -125,7 +125,10 @@ class Database:
         """)
         stats["trends"] = self.cur.fetchall()
 
-        self.cur.execute("SELECT id, first_name, last_name, mobile FROM patients ORDER BY id DESC LIMIT 5")
+        self.cur.execute(
+            "SELECT id, first_name, last_name, mobile"
+            " FROM patients ORDER BY id DESC LIMIT 5"
+        )
         stats["recent"] = self.cur.fetchall()
 
         self.cur.execute("SELECT symptoms FROM patients")

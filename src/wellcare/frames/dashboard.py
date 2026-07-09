@@ -3,18 +3,15 @@ Dashboard screen with analytics and charts for admin users.
 """
 
 import customtkinter as ctk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from src.wellcare.config import (
     AUTO_REFRESH_INTERVAL_MS,
     COLOR_DARK_BG,
     COLOR_LIGHT_BG,
     COLOR_WARNING,
 )
-from src.wellcare.frames.home import HomeFrame
-from src.wellcare.logger import logger
 
 
 class DashboardFrame(ctk.CTkFrame):
@@ -37,7 +34,9 @@ class DashboardFrame(ctk.CTkFrame):
             return
 
         header_frame = ctk.CTkFrame(self, fg_color="transparent")
-        header_frame.grid(row=0, column=0, columnspan=2, pady=(20, 10), sticky="ew")
+        header_frame.grid(
+            row=0, column=0, columnspan=2, pady=(20, 10), sticky="ew"
+        )
         header_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         ctk.CTkLabel(
@@ -66,10 +65,16 @@ class DashboardFrame(ctk.CTkFrame):
         ).grid(row=0, column=2, sticky="e", padx=20)
 
         self.kpi_frame = ctk.CTkFrame(self, fg_color="#1e85da", corner_radius=10)
-        self.kpi_frame.grid(row=1, column=0, columnspan=2, pady=10, ipady=10, ipadx=40)
+        self.kpi_frame.grid(
+            row=1, column=0, columnspan=2,
+            pady=10, ipady=10, ipadx=40,
+        )
 
         self.chart_container = ctk.CTkFrame(self, fg_color="transparent")
-        self.chart_container.grid(row=3, column=0, columnspan=2, pady=(10, 30), padx=20, sticky="nsew")
+        self.chart_container.grid(
+            row=3, column=0, columnspan=2,
+            pady=(10, 30), padx=20, sticky="nsew",
+        )
 
         ctk.CTkLabel(
             self, text="Graphical Representation",
@@ -92,13 +97,25 @@ class DashboardFrame(ctk.CTkFrame):
 
         total_card = ctk.CTkFrame(self.kpi_frame, fg_color="transparent")
         total_card.grid(row=0, column=0, padx=40, pady=10)
-        ctk.CTkLabel(total_card, text="Total Patients", font=("Roboto", 18), text_color="white").pack()
-        ctk.CTkLabel(total_card, text=str(stats["total"]), font=("Roboto", 45, "bold"), text_color="white").pack()
+        ctk.CTkLabel(
+            total_card, text="Total Patients",
+            font=("Roboto", 18), text_color="white",
+        ).pack()
+        ctk.CTkLabel(
+            total_card, text=str(stats["total"]),
+            font=("Roboto", 45, "bold"), text_color="white",
+        ).pack()
 
         today_card = ctk.CTkFrame(self.kpi_frame, fg_color="transparent")
         today_card.grid(row=0, column=1, padx=40, pady=10)
-        ctk.CTkLabel(today_card, text="New Patients (Today)", font=("Roboto", 18), text_color="white").pack()
-        ctk.CTkLabel(today_card, text=str(stats["today"]), font=("Roboto", 45, "bold"), text_color=COLOR_WARNING).pack()
+        ctk.CTkLabel(
+            today_card, text="New Patients (Today)",
+            font=("Roboto", 18), text_color="white",
+        ).pack()
+        ctk.CTkLabel(
+            today_card, text=str(stats["today"]),
+            font=("Roboto", 45, "bold"), text_color=COLOR_WARNING,
+        ).pack()
 
         if stats["total"] == 0:
             ctk.CTkLabel(

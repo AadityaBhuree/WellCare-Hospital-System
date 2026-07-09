@@ -1,13 +1,14 @@
 """
 About screen frame with hospital information.
 """
-
+import logging
 import webbrowser
 
 import customtkinter as ctk
 from PIL import Image
-
 from src.wellcare.config import ASSETS_DIR
+
+logger = logging.getLogger(__name__)
 
 
 class AboutFrame(ctk.CTkFrame):
@@ -30,8 +31,8 @@ class AboutFrame(ctk.CTkFrame):
             ctk.CTkLabel(self, text="", image=logo).grid(
                 columnspan=2, row=0, column=0, pady=(10, 10),
             )
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Could not load logo: %s", exc)
 
         ctk.CTkLabel(
             self,
