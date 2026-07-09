@@ -65,7 +65,7 @@ class ClinicApp(ctk.CTk):
 
         try:
             img = Image.open(ASSETS_DIR / "wellcare.png")
-            logo = ctk.CTkImage(dark_image=img, light_image=img, size=(400, 380))
+            logo = ctk.CTkImage(dark_image=img, light_image=img, size=(200, 190))
             ctk.CTkLabel(
                 self.upper_frame,
                 text="",
