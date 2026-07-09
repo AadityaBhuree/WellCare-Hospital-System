@@ -29,7 +29,7 @@ class HomeFrame(ctk.CTkFrame):
             big_logo = ctk.CTkImage(
                 light_image=logo_pil_image,
                 dark_image=logo_pil_image,
-                size=(350, 350),
+                size=(550, 650),
             )
             logo_label = ctk.CTkLabel(self, text="", image=big_logo)
             logo_label.grid(row=1, column=0, columnspan=2, pady=(10, 0))
