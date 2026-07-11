@@ -9,7 +9,7 @@ This makes the test suite fully CI-safe.
 import os
 
 # ── Pre-computed bcrypt hash for "123" ─────────────────────────────────────
-_BCRYPT_HASH_123 = "$2b$12$I9OzGPwcjZN6v.rNnq1hDu62JnHFxZWExyVYjVl6FjmFIIKPa1by."
+_BCRYPT_HASH_123 = "$2b$12$Ilzeazc/m5vkkU9/9fL/j.XAgakZNjAYUis4/bQm8DP/m6Fn2IPfu"
 
 # ── Set environment variables before any module imports ────────────────────
 # These are read by config.py (via os.getenv) at import time, so they
