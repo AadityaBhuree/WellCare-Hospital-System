@@ -1,16 +1,16 @@
-"""
-Search screen for finding and managing patient records.
-"""
+"""Search screen for finding and managing patient records."""
 
 from tkinter import messagebox
+from typing import Any
 
 import customtkinter as ctk
+from src.wellcare.ui import Theme, ToastNotification
 
 
 class SearchFrame(ctk.CTkFrame):
     """Search page to look up and delete patient records."""
 
-    def __init__(self, master, controller) -> None:
+    def __init__(self, master: Any, controller: Any) -> None:
         super().__init__(master, fg_color="transparent")
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
@@ -20,28 +20,38 @@ class SearchFrame(ctk.CTkFrame):
         ctk.CTkLabel(
             self,
             text="Search Patient Record",
-            font=("Courier New", 30, "bold"),
+            font=Theme.FONT_HEADING,
+            text_color=Theme.PRIMARY,
         ).grid(row=0, column=0, pady=30)
 
         search_frame = ctk.CTkFrame(self, fg_color="transparent")
         search_frame.grid(row=1, column=0, pady=10)
 
-        self.search_entry = ctk.CTkEntry(search_frame, placeholder_text="Enter Name", width=300)
+        self.search_entry = ctk.CTkEntry(
+            search_frame,
+            placeholder_text="Enter Patient Name",
+            width=300,
+            height=38,
+            border_color=Theme.BORDER_LIGHT,
+        )
         self.search_entry.pack(side="left", padx=10)
 
         ctk.CTkButton(
             search_frame,
             text="Search",
             command=self._search_action,
-            fg_color="#1e85da",
+            fg_color=Theme.PRIMARY_ACCENT,
+            hover_color=Theme.PRIMARY_LIGHT,
+            height=38,
         ).pack(side="left", padx=10)
 
         ctk.CTkButton(
             search_frame,
             text="Show All",
             command=lambda: self._search_action(show_all=True),
-            fg_color="#388e3c",
-            hover_color="#2e7d32",
+            fg_color=Theme.SUCCESS,
+            hover_color=Theme.SUCCESS_HOVER,
+            height=38,
         ).pack(side="left", padx=10)
 
         # Admin: delete controls
@@ -53,14 +63,17 @@ class SearchFrame(ctk.CTkFrame):
                 action_frame,
                 placeholder_text="Patient ID to Delete",
                 width=150,
+                height=36,
+                border_color=Theme.BORDER_LIGHT,
             )
             self.delete_id_entry.pack(side="left", padx=10)
 
             ctk.CTkButton(
                 action_frame,
                 text="Delete Patient",
-                fg_color="red",
-                hover_color="#8b0000",
+                fg_color=Theme.DANGER,
+                hover_color=Theme.DANGER_HOVER,
+                height=36,
                 command=self._delete_action,
             ).pack(side="left", padx=10)
 
@@ -68,7 +81,7 @@ class SearchFrame(ctk.CTkFrame):
             self,
             width=800,
             height=400,
-            font=("Courier", 14),
+            font=Theme.FONT_MONO,
         )
         self.result_box.grid(
             row=3,
@@ -84,6 +97,11 @@ class SearchFrame(ctk.CTkFrame):
     def _search_action(self, show_all: bool = False) -> None:
         name = self.search_entry.get().strip() if not show_all else ""
         if not name and not show_all:
+            ToastNotification(
+                self.controller,
+                "Please enter a name to search.",
+                toast_type="warning",
+            )
             messagebox.showwarning("Warning", "Please enter a name to search.")
             return
 
@@ -119,6 +137,11 @@ class SearchFrame(ctk.CTkFrame):
     def _delete_action(self) -> None:
         pid = self.delete_id_entry.get().strip()
         if not pid.isdigit():
+            ToastNotification(
+                self.controller,
+                "Please enter a valid numeric ID.",
+                toast_type="error",
+            )
             messagebox.showwarning("Error", "Please enter a valid numeric ID.")
             return
 
@@ -127,8 +150,18 @@ class SearchFrame(ctk.CTkFrame):
             f"Are you sure you want to completely delete Patient ID {pid}?",
         ):
             if self.controller.db.delete_patient(pid):
+                ToastNotification(
+                    self.controller,
+                    f"Patient ID {pid} deleted successfully.",
+                    toast_type="success",
+                )
                 messagebox.showinfo("Success", f"Patient ID {pid} deleted.")
                 self._search_action()
                 self.controller.refresh_dashboard_if_open()
             else:
+                ToastNotification(
+                    self.controller,
+                    "Failed to delete patient. Ensure ID exists.",
+                    toast_type="error",
+                )
                 messagebox.showerror("Error", "Failed to delete patient. Ensure ID exists.")
