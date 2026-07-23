@@ -29,18 +29,30 @@ wellcare = "src.wellcare.__main__:main"
 where = ["src"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 line-length = 100
-src = ["src"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "S", "SIM"]
-ignore = ["SIM117", "SIM108", "S101"]
+select = ["E", "F", "I", "N", "W", "UP", "S", "SIM", "B", "C4", "RUF"]
+ignore = ["SIM117", "SIM108", "S101", "RUF012"]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "."
+explicit_package_bases = true
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -53,7 +65,7 @@ omit = ["tests/*"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = false
-fail_under = 15
+fail_under = 50
 
 exclude_lines = [
     "pragma: no cover",
@@ -62,3 +74,4 @@ exclude_lines = [
     "raise AssertionError",
     "raise NotImplementedError",
 ]
+

@@ -108,7 +108,12 @@ Patient_Prescriptions/
 # Project progress
 .progress
 
+# Temporary / Agent memory
+.gemini/
+memory.md
+
 # Windows reserved names
 nul
 NUL
 Nul
+
