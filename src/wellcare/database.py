@@ -7,11 +7,10 @@ import sqlite3
 from collections import Counter
 from typing import Any, cast
 
-
 from src.wellcare.cache import TTLCache
 from src.wellcare.config import DATABASE_PATH
 from src.wellcare.logger import logger
-from src.wellcare.models import Patient
+from src.wellcare.models import Appointment, Patient
 
 
 class Database:
@@ -244,7 +243,6 @@ class Database:
         if cached_stats is not None:
             return cast(dict[str, Any], cached_stats)
 
-
         stats: dict[str, Any] = {
             "total": 0,
             "today": 0,
@@ -306,3 +304,71 @@ class Database:
                     if len(word) > 3:
                         symptom_words.append(word.lower())
         return Counter(symptom_words).most_common(top_n)
+
+    def add_appointment(self, appt: Appointment) -> bool:
+        """Add a new appointment record."""
+        if self.cur is None or self.conn is None:
+            return False
+        try:
+            self.cur.execute(
+                """
+                INSERT INTO appointments(
+                    patient_id, doctor_name, department, date, time_slot, status, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+                (
+                    appt.patient_id,
+                    appt.doctor_name,
+                    appt.department,
+                    appt.date,
+                    appt.time_slot,
+                    appt.status,
+                    appt.notes,
+                ),
+            )
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logger.error("Failed to add appointment: %s", e)
+            return False
+
+    def get_appointments(self, date_filter: str = "") -> list[tuple[Any, ...]]:
+        """Get appointments list, optionally filtered by date."""
+        if self.cur is None:
+            return []
+        if date_filter:
+            self.cur.execute(
+                """
+                SELECT a.id, p.first_name || ' ' || p.last_name, a.doctor_name,
+                       a.department, a.date, a.time_slot, a.status, a.notes
+                FROM appointments a
+                JOIN patients p ON a.patient_id = p.id
+                WHERE a.date = ?
+                ORDER BY a.time_slot ASC
+            """,
+                (date_filter,),
+            )
+        else:
+            self.cur.execute("""
+                SELECT a.id, p.first_name || ' ' || p.last_name, a.doctor_name,
+                       a.department, a.date, a.time_slot, a.status, a.notes
+                FROM appointments a
+                JOIN patients p ON a.patient_id = p.id
+                ORDER BY a.id DESC LIMIT 50
+            """)
+        return self.cur.fetchall()
+
+    def update_appointment_status(self, appt_id: int | str, status: str) -> bool:
+        """Update appointment status."""
+        if self.cur is None or self.conn is None:
+            return False
+        try:
+            self.cur.execute(
+                "UPDATE appointments SET status = ? WHERE id = ?",
+                (status, appt_id),
+            )
+            self.conn.commit()
+            return self.cur.rowcount > 0
+        except Exception as e:
+            logger.error("Failed to update appointment %s status: %s", appt_id, e)
+            return False

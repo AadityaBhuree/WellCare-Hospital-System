@@ -2,7 +2,6 @@
 
 from typing import Any, cast
 
-
 import customtkinter as ctk
 from src.wellcare.ui.theme import Theme
 
@@ -205,7 +204,6 @@ class FormField(ctk.CTkFrame):
         if self.widget_type == "textbox":
             return cast(str, self.input_widget.get("1.0", "end-1c")).strip()
         return cast(str, self.input_widget.get()).strip()
-
 
     def set_error(self, message: str) -> None:
         self.error_label.configure(text=message)

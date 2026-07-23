@@ -1,6 +1,7 @@
 """Image loading utilities for CustomTkinter widgets."""
 
 from pathlib import Path
+
 import customtkinter as ctk
 from PIL import Image
 from src.wellcare.logger import logger

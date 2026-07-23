@@ -209,3 +209,42 @@ class TestDatabase:
         words = [word for word, _ in frequencies]
         assert "fever" in words
         assert "cough" in words
+
+    def test_appointment_crud(self, db: Database) -> None:
+        from src.wellcare.models import Appointment, AppointmentStatus
+
+        # First add a patient
+        patient_data = (
+            "Test",
+            "Patient",
+            "30",
+            "Male",
+            "A+",
+            "70",
+            "9998887776",
+            "test@p.com",
+            "Addr",
+            "123456",
+            "Fever",
+        )
+        assert db.add_patient(patient_data) is True
+        patients = db.search_patient("Test")
+        assert len(patients) == 1
+        patient_id = patients[0][0]
+
+        appt = Appointment(
+            patient_id=patient_id,
+            doctor_name="Dr. Test",
+            department="General",
+            date="2026-07-25",
+            time_slot="10:00 AM",
+            status=AppointmentStatus.SCHEDULED.value,
+            notes="Regular checkup",
+        )
+        assert db.add_appointment(appt) is True
+
+        appts = db.get_appointments()
+        assert len(appts) >= 1
+
+        appt_id = appts[0][0]
+        assert db.update_appointment_status(appt_id, AppointmentStatus.COMPLETED.value) is True

@@ -22,6 +22,7 @@ from src.wellcare.config import (
 from src.wellcare.database import Database
 from src.wellcare.frames import (
     AboutFrame,
+    AppointmentsFrame,
     DashboardFrame,
     HomeFrame,
     LoginFrame,
@@ -156,6 +157,12 @@ class ClinicApp(ctk.CTk):
             text="SEARCH",
             **nav_args,
         )
+        self.appointments_button = ctk.CTkButton(
+            self.button_frame,
+            command=lambda: self.show_frame_by_name("AppointmentsFrame"),
+            text="APPOINTMENTS",
+            **nav_args,
+        )
         self.logout_button = ctk.CTkButton(
             self.button_frame,
             command=self._logout_action,
@@ -193,12 +200,14 @@ class ClinicApp(ctk.CTk):
 
             self.new_patient_record_button.grid(column=c_idx, row=0, padx=15)
             self.search_button.grid(column=c_idx + 1, row=0, padx=15)
-            self.about_button.grid(column=c_idx + 2, row=0, padx=15)
-            self.logout_button.grid(column=c_idx + 3, row=0, padx=15)
+            self.appointments_button.grid(column=c_idx + 2, row=0, padx=15)
+            self.about_button.grid(column=c_idx + 3, row=0, padx=15)
+            self.logout_button.grid(column=c_idx + 4, row=0, padx=15)
         else:
             self.dashboard_button.grid_forget()
             self.new_patient_record_button.grid_forget()
             self.search_button.grid_forget()
+            self.appointments_button.grid_forget()
             self.logout_button.grid_forget()
 
             self.about_button.grid(column=1, row=0, padx=15)
@@ -219,6 +228,7 @@ class ClinicApp(ctk.CTk):
             "DashboardFrame": DashboardFrame,
             "PatientEntryFrame": PatientEntryFrame,
             "SearchFrame": SearchFrame,
+            "AppointmentsFrame": AppointmentsFrame,
         }
 
         frame_class: Any = frame_map.get(frame_class_name)
@@ -231,6 +241,7 @@ class ClinicApp(ctk.CTk):
             DashboardFrame,
             PatientEntryFrame,
             SearchFrame,
+            AppointmentsFrame,
         ):
             messagebox.showwarning("Access Denied", "Please login first.")
             return self.show_frame_by_name("LoginFrame")
