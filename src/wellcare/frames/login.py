@@ -1,18 +1,18 @@
-"""
-Login screen with authentication logic.
-"""
+"""Login screen with authentication logic."""
 
 from tkinter import messagebox
+from typing import Any
 
 import customtkinter as ctk
 from src.wellcare.logger import logger
+from src.wellcare.ui import Theme, ToastNotification
 from src.wellcare.utils.auth import authenticate_user
 
 
 class LoginFrame(ctk.CTkFrame):
     """Login page for authentication."""
 
-    def __init__(self, master, controller) -> None:
+    def __init__(self, master: Any, controller: Any) -> None:
         super().__init__(master, fg_color="transparent")
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
@@ -23,34 +23,39 @@ class LoginFrame(ctk.CTkFrame):
         ctk.CTkLabel(
             self,
             text="Clinic System Login",
-            font=("", 28, "bold"),
+            font=Theme.FONT_HEADING,
+            text_color=Theme.PRIMARY,
         ).grid(pady=(50, 40), columnspan=2, column=0, row=0)
 
         ctk.CTkLabel(
             self,
-            text="ID:",
-            font=("Roboto", 20),
-            text_color="#3D3D3D",
+            text="User ID:",
+            font=Theme.FONT_BODY_BOLD,
+            text_color=Theme.TEXT_PRIMARY_LIGHT,
         ).grid(row=2, column=0, padx=10, pady=15, sticky="e")
 
         self.id_entry = ctk.CTkEntry(
             self,
-            placeholder_text="Admin ('admin') or Staff ('staff')",
+            placeholder_text="Enter Admin or Staff ID",
             width=250,
+            height=38,
+            border_color=Theme.BORDER_LIGHT,
         )
         self.id_entry.grid(row=2, column=1, padx=10, pady=15, sticky="w")
 
         ctk.CTkLabel(
             self,
             text="Password:",
-            font=("Roboto", 20),
-            text_color="#3D3D3D",
+            font=Theme.FONT_BODY_BOLD,
+            text_color=Theme.TEXT_PRIMARY_LIGHT,
         ).grid(row=3, column=0, padx=10, pady=15, sticky="e")
 
         self.password_entry = ctk.CTkEntry(
             self,
-            placeholder_text="Enter Password ('123')",
+            placeholder_text="Enter Password",
             width=250,
+            height=38,
+            border_color=Theme.BORDER_LIGHT,
             show="*",
         )
         self.password_entry.grid(row=3, column=1, padx=10, pady=15, sticky="w")
@@ -59,9 +64,12 @@ class LoginFrame(ctk.CTkFrame):
             self,
             text="Login",
             command=self._login_check,
-            font=("Roboto", 18, "bold"),
-            fg_color="#374fb9",
-            hover_color="#2a3c8e",
+            font=Theme.FONT_BODY_BOLD,
+            fg_color=Theme.PRIMARY_ACCENT,
+            hover_color=Theme.PRIMARY_LIGHT,
+            height=40,
+            width=250,
+            corner_radius=Theme.RADIUS_BUTTON,
         ).grid(row=4, column=0, padx=30, pady=40, columnspan=2)
 
     def _login_check(self) -> None:
@@ -74,6 +82,11 @@ class LoginFrame(ctk.CTkFrame):
             self.controller.is_logged_in = True
             self.controller.current_user_role = "admin"
             self.controller.update_nav_buttons()
+            ToastNotification(
+                self.controller,
+                "Welcome Administrator! Full dashboard unlocked.",
+                toast_type="success",
+            )
             messagebox.showinfo(
                 "Admin Login",
                 "Welcome Administrator!\nFull system dashboard unlocked.",
@@ -84,6 +97,11 @@ class LoginFrame(ctk.CTkFrame):
             self.controller.is_logged_in = True
             self.controller.current_user_role = "staff"
             self.controller.update_nav_buttons()
+            ToastNotification(
+                self.controller,
+                "Login Successful. Redirecting to Home.",
+                toast_type="success",
+            )
             messagebox.showinfo(
                 "Staff Login",
                 "Login Successful. Redirecting to Home.",
@@ -92,4 +110,9 @@ class LoginFrame(ctk.CTkFrame):
 
         else:
             logger.warning("Failed login attempt: %s", uid)
+            ToastNotification(
+                self.controller,
+                "Invalid User ID or Password!",
+                toast_type="error",
+            )
             messagebox.showwarning("Warning", "Invalid User ID or Password!")
