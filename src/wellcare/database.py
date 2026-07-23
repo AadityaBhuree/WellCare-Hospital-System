@@ -71,13 +71,15 @@ class Database:
     def search_patient(self, keyword: str) -> list[tuple[Any, ...]]:
         if self.cur is None:
             return []
+        # Escape special LIKE pattern characters
+        safe_keyword = keyword.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         self.cur.execute(
             """
             SELECT id, first_name, last_name, age, mobile, symptoms
             FROM patients
-            WHERE first_name LIKE ? OR last_name LIKE ?
+            WHERE first_name LIKE ? ESCAPE '\\' OR last_name LIKE ? ESCAPE '\\'
         """,
-            (f"%{keyword}%", f"%{keyword}%"),
+            (f"%{safe_keyword}%", f"%{safe_keyword}%"),
         )
         return self.cur.fetchall()
 
