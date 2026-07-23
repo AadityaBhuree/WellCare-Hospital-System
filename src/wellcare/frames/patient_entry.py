@@ -1,6 +1,4 @@
-"""
-Patient entry form for creating and saving patient records with PDF generation.
-"""
+from typing import Any, cast
 
 import customtkinter as ctk
 from src.wellcare.logger import logger
@@ -11,7 +9,7 @@ from src.wellcare.utils.validators import validate_patient_input
 class PatientEntryFrame(ctk.CTkFrame):
     """Form to enter, validate, and save new patient records."""
 
-    def __init__(self, master, controller) -> None:
+    def __init__(self, master: Any, controller: Any) -> None:
         super().__init__(master, fg_color="transparent")
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
@@ -28,7 +26,7 @@ class PatientEntryFrame(ctk.CTkFrame):
         self.status_label = ctk.CTkLabel(self, text="", font=("Roboto", 16, "bold"))
         self.status_label.grid(row=1, column=0, columnspan=2, pady=(0, 10))
 
-        fields = [
+        fields: list[tuple[str, str, Any, list[str]] | tuple[str, str, Any]] = [
             ("First Name", "first_name", ctk.CTkEntry),
             ("Last Name", "last_name", ctk.CTkEntry),
             ("Age", "age", ctk.CTkComboBox, [str(i) for i in range(1, 121)]),
@@ -47,7 +45,7 @@ class PatientEntryFrame(ctk.CTkFrame):
             ("Mobile No", "mobile", ctk.CTkEntry),
         ]
 
-        self.inputs: dict[str, ctk.CTkBaseClass] = {}
+        self.inputs: dict[str, Any] = {}
         row_idx = 2
 
         for field in fields:
@@ -60,12 +58,13 @@ class PatientEntryFrame(ctk.CTkFrame):
             ).grid(row=row_idx, column=0, padx=100, pady=10, sticky="e")
 
             if widget_type == ctk.CTkComboBox:
+                values = field[3] if len(field) > 3 else []
                 widget = widget_type(
                     self,
-                    values=field[3],
+                    values=values,
                     border_color="#dddddd",
                     width=250,
-                )  # type: ignore
+                )
                 widget.set("Select Age" if label_text == "Age" else "Select")
             elif widget_type == ctk.CTkTextbox:
                 widget = widget_type(
@@ -125,8 +124,8 @@ class PatientEntryFrame(ctk.CTkFrame):
     def _get_val(self, key: str) -> str:
         widget = self.inputs[key]
         if isinstance(widget, ctk.CTkTextbox):
-            return widget.get("1.0", "end-1c").strip()
-        return widget.get().strip()
+            return cast(str, widget.get("1.0", "end-1c")).strip()
+        return cast(str, widget.get()).strip()
 
     def _save_action(self) -> None:
         vals = {k: self._get_val(k) for k in self.inputs}

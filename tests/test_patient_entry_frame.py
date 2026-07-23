@@ -4,14 +4,16 @@ Uses ``MagicMock`` subclasses for widget types so the ``isinstance()``
 checks in ``patient_entry.py`` work correctly without a display.
 """
 
+# Import tkinter first so customtkinter can find its sub-modules
+import tkinter  # noqa: F401
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Import tkinter first so customtkinter can find its sub-modules
-import tkinter  # noqa: F401
+if TYPE_CHECKING:
+    from src.wellcare.frames.patient_entry import PatientEntryFrame
 
-import pytest  # noqa: F401
 
 # ── Mock widget classes (isinstance-safe) ──────────────────────────────────
 # These subclass MagicMock so isinstance(w, MockTextbox) returns True
@@ -112,7 +114,8 @@ class TestDisplayStatus:
     def test_displays_message(self, frame) -> None:
         frame._display_status("Hello", "red")
         frame.status_label.configure.assert_called_with(
-            text="Hello", text_color="red",
+            text="Hello",
+            text_color="red",
         )
 
     def test_schedules_clear(self, frame) -> None:

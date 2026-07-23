@@ -1,7 +1,5 @@
 """Tests for authentication utilities."""
 
-import pytest
-
 from src.wellcare.utils.auth import authenticate_user, hash_password, verify_password
 
 

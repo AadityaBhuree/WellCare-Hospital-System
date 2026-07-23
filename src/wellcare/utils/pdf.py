@@ -4,7 +4,6 @@ PDF prescription generation for patient records.
 
 import datetime
 from pathlib import Path
-from typing import Optional
 
 from fpdf import FPDF
 from src.wellcare.config import PRESCRIPTIONS_DIR
@@ -16,8 +15,8 @@ def generate_prescription(
     last_name: str,
     age: str,
     mobile: str,
-    output_dir: Optional[str] = None,
-) -> Optional[str]:
+    output_dir: str | None = None,
+) -> str | None:
     """Generate a PDF prescription for a patient.
 
     Args:
@@ -36,35 +35,50 @@ def generate_prescription(
     # Header
     pdf.set_font("Arial", "B", 24)
     pdf.set_text_color(30, 133, 218)
-    pdf.cell(200, 15, text="WellCare Hospital", ln=True, align="C")
+    pdf.cell(200, 15, text="WellCare Hospital", new_x="LOWER", new_y="NEXT", align="C")
 
     pdf.set_font("Arial", "I", 12)
     pdf.set_text_color(100, 100, 100)
-    pdf.cell(200, 10, text="Your health, our priority.", ln=True, align="C")
+    pdf.cell(200, 10, text="Your health, our priority.", new_x="LOWER", new_y="NEXT", align="C")
     pdf.ln(10)
 
     # Patient Details
     pdf.set_font("Arial", "B", 14)
     pdf.set_text_color(0, 0, 0)
-    pdf.cell(200, 10, text="Patient Record Form", ln=True, align="L", border="B")
+    pdf.cell(
+        200, 10, text="Patient Record Form", new_x="LOWER", new_y="NEXT", align="L", border="B"
+    )
     pdf.ln(5)
 
     pdf.set_font("Arial", "", 12)
-    pdf.cell(100, 10, text=f"Name: {first_name} {last_name}", ln=False)
-    pdf.cell(100, 10, text=f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}", ln=True)
-    pdf.cell(100, 10, text=f"Age: {age}", ln=False)
-    pdf.cell(100, 10, text=f"Mobile: {mobile}", ln=True)
+    pdf.cell(100, 10, text=f"Name: {first_name} {last_name}", new_x="RIGHT", new_y="TOP")
+    pdf.cell(
+        100,
+        10,
+        text=f"Date: {datetime.datetime.now().strftime('%Y-%m-%d')}",
+        new_x="LOWER",
+        new_y="NEXT",
+    )
+    pdf.cell(100, 10, text=f"Age: {age}", new_x="RIGHT", new_y="TOP")
+    pdf.cell(100, 10, text=f"Mobile: {mobile}", new_x="LOWER", new_y="NEXT")
     pdf.ln(10)
 
     # Prescription Notes
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(200, 10, text="Prescription / Doctor Notes:", ln=True, align="L")
+    pdf.cell(200, 10, text="Prescription / Doctor Notes:", new_x="LOWER", new_y="NEXT", align="L")
     pdf.set_font("Arial", "", 12)
     pdf.multi_cell(0, 80, text="", border=1)
     pdf.ln(10)
 
     pdf.set_font("Arial", "I", 10)
-    pdf.cell(200, 10, text="Doctor Signature: _______________________", ln=True, align="R")
+    pdf.cell(
+        200,
+        10,
+        text="Doctor Signature: _______________________",
+        new_x="LOWER",
+        new_y="NEXT",
+        align="R",
+    )
 
     # Save
     output_path = Path(output_dir) if output_dir else PRESCRIPTIONS_DIR

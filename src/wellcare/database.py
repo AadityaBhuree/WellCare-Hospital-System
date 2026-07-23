@@ -45,10 +45,11 @@ class Database:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
-        self.conn.commit()
+        if self.conn:
+            self.conn.commit()
 
     def add_patient(self, data: tuple[str, ...]) -> bool:
-        if self.cur is None:
+        if self.cur is None or self.conn is None:
             return False
         try:
             self.cur.execute(
@@ -81,7 +82,7 @@ class Database:
         return self.cur.fetchall()
 
     def delete_patient(self, patient_id: int | str) -> bool:
-        if self.cur is None:
+        if self.cur is None or self.conn is None:
             return False
         try:
             self.cur.execute("DELETE FROM patients WHERE id = ?", (patient_id,))

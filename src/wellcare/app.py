@@ -6,6 +6,7 @@ Implements the Controller-Frame pattern to manage navigation and global state.
 
 import datetime
 from tkinter import messagebox
+from typing import Any
 
 import customtkinter as ctk
 from PIL import Image
@@ -52,7 +53,7 @@ class ClinicApp(ctk.CTk):
 
         self.is_logged_in = False
         self.current_user_role: str | None = None  # "admin" | "staff"
-        self.current_frame = None
+        self.current_frame: ctk.CTkFrame | None = None
 
         self._build_ui()
         self.update_nav_buttons()
@@ -220,7 +221,8 @@ class ClinicApp(ctk.CTk):
             "SearchFrame": SearchFrame,
         }
 
-        frame_class = frame_map.get(frame_class_name)
+        frame_class: Any = frame_map.get(frame_class_name)
+
         if frame_class is None:
             logger.error("Unknown frame: %s", frame_class_name)
             return

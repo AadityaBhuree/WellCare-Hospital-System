@@ -1,7 +1,5 @@
 """Tests for input validation utilities."""
 
-import pytest
-
 from src.wellcare.utils.validators import (
     validate_age,
     validate_email,
@@ -76,12 +74,15 @@ class TestValidatePatientInput:
     """Tests for validate_patient_input (integration)."""
 
     def test_all_valid(self) -> None:
-        assert validate_patient_input(
-            mobile="9876543210",
-            email="test@example.com",
-            weight="70",
-            age="25",
-        ) is None
+        assert (
+            validate_patient_input(
+                mobile="9876543210",
+                email="test@example.com",
+                weight="70",
+                age="25",
+            )
+            is None
+        )
 
     def test_first_error_mobile(self) -> None:
         err = validate_patient_input(

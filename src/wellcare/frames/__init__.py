@@ -8,10 +8,10 @@ from src.wellcare.frames.patient_entry import PatientEntryFrame
 from src.wellcare.frames.search import SearchFrame
 
 __all__ = [
-    "HomeFrame",
     "AboutFrame",
-    "LoginFrame",
     "DashboardFrame",
+    "HomeFrame",
+    "LoginFrame",
     "PatientEntryFrame",
     "SearchFrame",
 ]

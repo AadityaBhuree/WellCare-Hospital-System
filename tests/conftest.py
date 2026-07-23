@@ -31,12 +31,10 @@ os.environ["AUTO_REFRESH_INTERVAL_MS"] = "10000"
 
 # Now it's safe to import config-dependent modules in tests.
 
-import sqlite3
+import sqlite3  # noqa: E402
 
-import pytest
-
-from src.wellcare.database import Database
-
+import pytest  # noqa: E402
+from src.wellcare.database import Database  # noqa: E402
 
 # ── Shared Fixtures ────────────────────────────────────────────────────────
 

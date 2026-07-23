@@ -11,16 +11,32 @@ class TestDatabase:
 
     def test_add_patient(self, db: Database) -> None:
         data = (
-            "John", "Doe", "30", "Male", "A+", "80",
-            "9876543210", "john@example.com", "123 Street", "123456",
+            "John",
+            "Doe",
+            "30",
+            "Male",
+            "A+",
+            "80",
+            "9876543210",
+            "john@example.com",
+            "123 Street",
+            "123456",
             "Fever",
         )
         assert db.add_patient(data) is True
 
     def test_search_patient_by_first_name(self, db: Database) -> None:
         data = (
-            "Jane", "Smith", "25", "Female", "B+", "60",
-            "9876543211", "jane@example.com", "456 Avenue", "654321",
+            "Jane",
+            "Smith",
+            "25",
+            "Female",
+            "B+",
+            "60",
+            "9876543211",
+            "jane@example.com",
+            "456 Avenue",
+            "654321",
             "Headache",
         )
         db.add_patient(data)
@@ -31,8 +47,16 @@ class TestDatabase:
 
     def test_search_patient_by_last_name(self, db: Database) -> None:
         data = (
-            "Bob", "Brown", "40", "Male", "O+", "85",
-            "9876543212", "bob@example.com", "789 Road", "789012",
+            "Bob",
+            "Brown",
+            "40",
+            "Male",
+            "O+",
+            "85",
+            "9876543212",
+            "bob@example.com",
+            "789 Road",
+            "789012",
             "Cough",
         )
         db.add_patient(data)
@@ -42,8 +66,16 @@ class TestDatabase:
 
     def test_search_patient_partial_match(self, db: Database) -> None:
         data = (
-            "Alice", "Johnson", "35", "Female", "AB+", "65",
-            "9876543213", "alice@example.com", "321 Lane", "321098",
+            "Alice",
+            "Johnson",
+            "35",
+            "Female",
+            "AB+",
+            "65",
+            "9876543213",
+            "alice@example.com",
+            "321 Lane",
+            "321098",
             "Cold",
         )
         db.add_patient(data)
@@ -57,8 +89,16 @@ class TestDatabase:
 
     def test_delete_patient(self, db: Database) -> None:
         data = (
-            "Delete", "Me", "50", "Male", "A-", "70",
-            "9876543214", "delete@example.com", "1 Road", "111111",
+            "Delete",
+            "Me",
+            "50",
+            "Male",
+            "A-",
+            "70",
+            "9876543214",
+            "delete@example.com",
+            "1 Road",
+            "111111",
             "Pain",
         )
         db.add_patient(data)
@@ -85,13 +125,29 @@ class TestDatabase:
 
     def test_dashboard_stats_with_patients(self, db: Database) -> None:
         data1 = (
-            "John", "Doe", "30", "Male", "A+", "80",
-            "9876543210", "john@example.com", "123 Street", "123456",
+            "John",
+            "Doe",
+            "30",
+            "Male",
+            "A+",
+            "80",
+            "9876543210",
+            "john@example.com",
+            "123 Street",
+            "123456",
             "Fever, Cough",
         )
         data2 = (
-            "Jane", "Smith", "25", "Female", "B+", "60",
-            "9876543211", "jane@example.com", "456 Avenue", "654321",
+            "Jane",
+            "Smith",
+            "25",
+            "Female",
+            "B+",
+            "60",
+            "9876543211",
+            "jane@example.com",
+            "456 Avenue",
+            "654321",
             "Headache",
         )
         db.add_patient(data1)
@@ -103,18 +159,51 @@ class TestDatabase:
         assert len(stats["recent"]) == 2
 
     def test_symptom_frequencies(self, db: Database) -> None:
-        db.add_patient((
-            "P1", "", "30", "Male", "A+", "80",
-            "1", "a@b.com", "Addr", "000000", "Fever, Cough",
-        ))
-        db.add_patient((
-            "P2", "", "25", "Female", "B+", "60",
-            "2", "b@b.com", "Addr", "111111", "Fever",
-        ))
-        db.add_patient((
-            "P3", "", "35", "Male", "O+", "70",
-            "3", "c@b.com", "Addr", "222222", "Cough, Cold",
-        ))
+        db.add_patient(
+            (
+                "P1",
+                "",
+                "30",
+                "Male",
+                "A+",
+                "80",
+                "1",
+                "a@b.com",
+                "Addr",
+                "000000",
+                "Fever, Cough",
+            )
+        )
+        db.add_patient(
+            (
+                "P2",
+                "",
+                "25",
+                "Female",
+                "B+",
+                "60",
+                "2",
+                "b@b.com",
+                "Addr",
+                "111111",
+                "Fever",
+            )
+        )
+        db.add_patient(
+            (
+                "P3",
+                "",
+                "35",
+                "Male",
+                "O+",
+                "70",
+                "3",
+                "c@b.com",
+                "Addr",
+                "222222",
+                "Cough, Cold",
+            )
+        )
 
         frequencies = db.get_symptom_frequencies(top_n=3)
         words = [word for word, _ in frequencies]

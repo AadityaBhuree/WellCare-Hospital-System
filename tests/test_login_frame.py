@@ -4,12 +4,15 @@
 only need to mock widget creation — not the entire Tk stack.
 """
 
+# Import needed modules first so they register in sys.modules properly
+import tkinter  # noqa: F401
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Import needed modules first so they register in sys.modules properly
-import tkinter  # noqa: F401
+if TYPE_CHECKING:
+    from src.wellcare.frames.login import LoginFrame
 
 
 @pytest.fixture(autouse=True)
@@ -96,7 +99,8 @@ class TestLoginCheck:
 
         assert frame.controller.is_logged_in is False
         frame._mock_msgbox.showwarning.assert_called_once_with(
-            "Warning", "Invalid User ID or Password!",
+            "Warning",
+            "Invalid User ID or Password!",
         )
 
     def test_invalid_username(self, frame) -> None:
