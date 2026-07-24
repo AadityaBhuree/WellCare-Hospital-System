@@ -33,6 +33,8 @@ from src.wellcare.frames import (
     SearchFrame,
 )
 from src.wellcare.logger import logger
+from src.wellcare.utils.image_loader import load_ctk_image
+
 
 
 class ClinicApp(ctk.CTk):
@@ -69,17 +71,15 @@ class ClinicApp(ctk.CTk):
         self.upper_frame.pack(side="top", fill="x")
         self.upper_frame.pack_propagate(False)
 
-        logo_image = ctk.CTkImage(
-            light_image=Image.open(ASSETS_DIR / "logo.png"),
-            dark_image=Image.open(ASSETS_DIR / "logo.png"),
-            size=(80, 80),
-        )
-        self.logo_label = ctk.CTkLabel(
-            self.upper_frame,
-            image=logo_image,
-            text="",
-        )
-        self.logo_label.pack(side="left", padx=20, pady=10)
+        logo_image = load_ctk_image(ASSETS_DIR / "wellcare.png", size=(80, 80))
+        if logo_image:
+            self.logo_label = ctk.CTkLabel(
+                self.upper_frame,
+                image=logo_image,
+                text="",
+            )
+            self.logo_label.pack(side="left", padx=20, pady=10)
+
 
         self.title_label = ctk.CTkLabel(
             self.upper_frame,
