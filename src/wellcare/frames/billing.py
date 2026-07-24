@@ -6,6 +6,7 @@ from typing import Any
 import customtkinter as ctk
 from src.wellcare.models import Bill, PaymentStatus
 from src.wellcare.ui import KPICard, Theme, ToastNotification
+from src.wellcare.utils.pdf import generate_invoice_pdf
 
 
 class BillingFrame(ctk.CTkFrame):
@@ -65,14 +66,14 @@ class BillingFrame(ctk.CTkFrame):
 
         self.kpi_pending_count = KPICard(
             self.kpi_frame,
-            title="Unpaid Invoices",
+            title="Unpaid Count",
             value="0",
-            icon="📋",
+            icon="⚠️",
             accent_color=Theme.DANGER,
         )
         self.kpi_pending_count.grid(row=0, column=3, padx=5, sticky="ew")
 
-        # Left Form Card: Create New Invoice
+        # Left Column: Add Invoice Form Card
         form_card = ctk.CTkFrame(
             self,
             fg_color="#ffffff",
@@ -95,17 +96,17 @@ class BillingFrame(ctk.CTkFrame):
         self.patient_id_entry = ctk.CTkEntry(form_card, placeholder_text="e.g. 1", height=34)
         self.patient_id_entry.pack(fill="x", padx=15, pady=(0, 10))
 
-        ctk.CTkLabel(form_card, text="Amount ($):", font=Theme.FONT_BODY_BOLD).pack(
+        ctk.CTkLabel(form_card, text="Billing Amount ($):", font=Theme.FONT_BODY_BOLD).pack(
             anchor="w", padx=15
         )
         self.amount_entry = ctk.CTkEntry(form_card, placeholder_text="e.g. 150.00", height=34)
         self.amount_entry.pack(fill="x", padx=15, pady=(0, 10))
 
-        ctk.CTkLabel(form_card, text="Description / Service:", font=Theme.FONT_BODY_BOLD).pack(
+        ctk.CTkLabel(form_card, text="Description / Services:", font=Theme.FONT_BODY_BOLD).pack(
             anchor="w", padx=15
         )
         self.desc_entry = ctk.CTkEntry(
-            form_card, placeholder_text="e.g. General Consultation & Blood Test", height=34
+            form_card, placeholder_text="e.g. Consultation & Blood Test", height=34
         )
         self.desc_entry.pack(fill="x", padx=15, pady=(0, 10))
 
@@ -114,14 +115,14 @@ class BillingFrame(ctk.CTkFrame):
         )
         self.status_combo = ctk.CTkComboBox(
             form_card,
-            values=[PaymentStatus.PENDING.value, PaymentStatus.PAID.value],
+            values=["Pending", "Paid", "Partial"],
             height=34,
         )
         self.status_combo.pack(fill="x", padx=15, pady=(0, 15))
 
         ctk.CTkButton(
             form_card,
-            text="[+] Create Invoice",
+            text="💰 Generate Invoice",
             command=self._create_bill_action,
             fg_color=Theme.SUCCESS,
             hover_color=Theme.SUCCESS_HOVER,
@@ -129,7 +130,7 @@ class BillingFrame(ctk.CTkFrame):
             height=38,
         ).pack(fill="x", padx=15, pady=(0, 20))
 
-        # Right List Card: Invoices Table
+        # Right Column: Invoice History List
         list_card = ctk.CTkFrame(
             self,
             fg_color="#ffffff",
@@ -145,7 +146,7 @@ class BillingFrame(ctk.CTkFrame):
 
         ctk.CTkLabel(
             filter_frame,
-            text="Billing Records History",
+            text="Hospital Invoices & Receivables",
             font=Theme.FONT_SUBHEADING,
             text_color=Theme.PRIMARY_ACCENT,
         ).pack(side="left")
@@ -171,7 +172,7 @@ class BillingFrame(ctk.CTkFrame):
         action_bar.pack(fill="x", padx=15, pady=(0, 15))
 
         self.bill_id_entry = ctk.CTkEntry(
-            action_bar, placeholder_text="Invoice ID", width=100, height=32
+            action_bar, placeholder_text="Invoice ID", width=90, height=32
         )
         self.bill_id_entry.pack(side="left", padx=(0, 10))
 
@@ -180,9 +181,18 @@ class BillingFrame(ctk.CTkFrame):
             text="Mark Paid ✅",
             command=self._mark_paid_action,
             fg_color=Theme.SUCCESS,
-            width=110,
+            width=100,
             height=32,
-        ).pack(side="left", padx=(0, 10))
+        ).pack(side="left", padx=(0, 5))
+
+        ctk.CTkButton(
+            action_bar,
+            text="Print Receipt 📄",
+            command=self._print_invoice_pdf_action,
+            fg_color=Theme.PRIMARY_ACCENT,
+            width=120,
+            height=32,
+        ).pack(side="left", padx=5)
 
     def load_billing_data(self) -> None:
         """Fetch bills and update financial KPIs and list."""
@@ -274,3 +284,33 @@ class BillingFrame(ctk.CTkFrame):
             self.load_billing_data()
         else:
             messagebox.showerror("Error", f"Invoice #{bid} not found or status update failed.")
+
+    def _print_invoice_pdf_action(self) -> None:
+        bid_str = self.bill_id_entry.get().strip()
+        if not bid_str.isdigit():
+            messagebox.showerror("Error", "Please enter a valid numeric Invoice ID.")
+            return
+
+        bid = int(bid_str)
+        bills = self.controller.db.get_bills()
+        target_bill = next((b for b in bills if b[0] == bid), None)
+
+        if target_bill:
+            _, _pid, pname, _aid, amount, desc, status, _cat = target_bill
+            pdf_path = generate_invoice_pdf(
+                bill_id=bid,
+                patient_name=pname or "Unknown Patient",
+                amount=amount,
+                description=desc or "",
+                status=status or "Pending",
+            )
+            if pdf_path:
+                ToastNotification(
+                    self.controller, f"PDF Invoice generated for #{bid}!", toast_type="success"
+                )
+                messagebox.showinfo("Invoice Generated", f"Invoice saved to {pdf_path}")
+            else:
+                messagebox.showerror("Error", "Failed to generate PDF Invoice.")
+        else:
+            messagebox.showerror("Error", f"Invoice #{bid} not found in database.")
+

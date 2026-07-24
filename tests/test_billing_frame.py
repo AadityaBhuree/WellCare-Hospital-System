@@ -100,3 +100,19 @@ class TestBillingFrame:
 
         frame._mark_paid_action()
         controller.db.update_bill_status.assert_called_once_with(101, "Paid")
+
+    def test_print_invoice_pdf_action_success(self, frame, controller) -> None:
+        frame.bill_id_entry.get = MagicMock(return_value="1")
+        controller.db.get_bills.return_value = [
+            (1, 10, "John Doe", None, 150.0, "Consultation", "Paid", "2026-07-24")
+        ]
+        with patch("src.wellcare.frames.billing.generate_invoice_pdf", return_value="path/to/invoice.pdf") as mock_pdf:
+            frame._print_invoice_pdf_action()
+            mock_pdf.assert_called_once_with(
+                bill_id=1,
+                patient_name="John Doe",
+                amount=150.0,
+                description="Consultation",
+                status="Paid",
+            )
+
