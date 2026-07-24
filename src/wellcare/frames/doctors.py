@@ -1,9 +1,9 @@
 """Doctor directory and management frame."""
 
+from tkinter import messagebox
 from typing import Any
 
 import customtkinter as ctk
-
 from src.wellcare.ui import Theme, ToastNotification
 from src.wellcare.utils.validators import validate_email, validate_mobile
 
@@ -62,7 +62,7 @@ class DoctorsFrame(ctk.CTkFrame):
             self,
             width=750,
             height=250,
-            fg_color=Theme.CARD_BG,
+            fg_color=Theme.SURFACE_LIGHT,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,
         )
@@ -72,7 +72,7 @@ class DoctorsFrame(ctk.CTkFrame):
         if self.controller.current_user_role == "admin":
             add_card = ctk.CTkFrame(
                 self,
-                fg_color=Theme.CARD_BG,
+                fg_color=Theme.SURFACE_LIGHT,
                 border_width=1,
                 border_color=Theme.BORDER_LIGHT,
             )
@@ -146,7 +146,7 @@ class DoctorsFrame(ctk.CTkFrame):
                 self.list_frame,
                 text="No doctors found matching criteria.",
                 font=Theme.FONT_BODY,
-                text_color=Theme.TEXT_SECONDARY,
+                text_color=Theme.TEXT_SECONDARY_LIGHT,
             ).pack(pady=20)
             return
 
@@ -159,7 +159,7 @@ class DoctorsFrame(ctk.CTkFrame):
             ctk.CTkLabel(
                 header_frame,
                 text=text,
-                font=Theme.FONT_BUTTON,
+                font=Theme.FONT_BODY_BOLD,
                 text_color="#FFFFFF",
                 width=widths[idx],
             ).pack(side="left", padx=2)
@@ -174,7 +174,7 @@ class DoctorsFrame(ctk.CTkFrame):
                     row,
                     text=val,
                     font=Theme.FONT_BODY,
-                    text_color=Theme.TEXT_PRIMARY,
+                    text_color=Theme.TEXT_PRIMARY_LIGHT,
                     width=widths[idx],
                 ).pack(side="left", padx=2)
 
@@ -186,21 +186,19 @@ class DoctorsFrame(ctk.CTkFrame):
         days = self.days_input.get().strip() or "Mon,Tue,Wed,Thu,Fri"
 
         if not name or not spec:
-            ToastNotification.show(
-                self, "Doctor Name and Specialization are required!", is_error=True
-            )
+            messagebox.showerror("Error", "Doctor Name and Specialization are required!")
             return
 
-        if phone and not validate_mobile(phone):
-            ToastNotification.show(self, "Invalid 10-digit mobile phone number!", is_error=True)
+        if phone and validate_mobile(phone):
+            messagebox.showerror("Error", "Invalid 10-digit mobile phone number!")
             return
 
-        if email and not validate_email(email):
-            ToastNotification.show(self, "Invalid email address format!", is_error=True)
+        if email and validate_email(email):
+            messagebox.showerror("Error", "Invalid email address format!")
             return
 
         if self.controller.db.add_doctor(name, spec, phone, email, days):
-            ToastNotification.show(self, f"Doctor {name} registered successfully!")
+            ToastNotification(self, f"Doctor {name} registered successfully!", toast_type="success")
             self.name_input.delete(0, "end")
             self.spec_input.delete(0, "end")
             self.phone_input.delete(0, "end")
@@ -208,4 +206,4 @@ class DoctorsFrame(ctk.CTkFrame):
             self.days_input.delete(0, "end")
             self.load_doctors()
         else:
-            ToastNotification.show(self, "Failed to register doctor into database.", is_error=True)
+            messagebox.showerror("Error", "Failed to register doctor into database.")

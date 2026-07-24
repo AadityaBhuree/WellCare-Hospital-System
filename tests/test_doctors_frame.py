@@ -15,8 +15,10 @@ def _mock_tk():
         patch("customtkinter.CTkFrame.grid"),
         patch("customtkinter.CTkScrollableFrame"),
         patch("customtkinter.CTkLabel"),
-        patch("customtkinter.CTkEntry"),
+        patch("customtkinter.CTkEntry", side_effect=lambda *args, **kwargs: MagicMock()),
         patch("customtkinter.CTkButton"),
+        patch("src.wellcare.frames.doctors.messagebox"),
+        patch("src.wellcare.frames.doctors.ToastNotification"),
     ):
         yield
 
@@ -62,15 +64,15 @@ class TestDoctorsFrame:
         frame._add_doctor_action()
         frame.controller.db.add_doctor.assert_not_called()
 
-    def test_add_doctor_action_success(self, frame, controller) -> None:
+    def test_add_doctor_action_success(self, frame) -> None:
         frame.name_input.get = MagicMock(return_value="Dr. John")
         frame.spec_input.get = MagicMock(return_value="Neurology")
         frame.phone_input.get = MagicMock(return_value="9876543210")
         frame.email_input.get = MagicMock(return_value="john@clinic.com")
         frame.days_input.get = MagicMock(return_value="Mon,Wed,Fri")
-        controller.db.add_doctor.return_value = True
+        frame.controller.db.add_doctor.return_value = True
 
         frame._add_doctor_action()
-        controller.db.add_doctor.assert_called_once_with(
+        frame.controller.db.add_doctor.assert_called_once_with(
             "Dr. John", "Neurology", "9876543210", "john@clinic.com", "Mon,Wed,Fri"
         )

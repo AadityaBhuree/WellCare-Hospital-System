@@ -117,3 +117,6 @@ nul
 NUL
 Nul
 
+# Application Logs
+logs/
+

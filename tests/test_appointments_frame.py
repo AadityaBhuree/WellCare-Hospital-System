@@ -25,16 +25,10 @@ def _mock_tk():
         patch("customtkinter.CTkTextbox") as mock_textbox,
         patch("src.wellcare.frames.appointments.messagebox") as mock_msgbox,
     ):
-        mock_entry_instance = MagicMock()
-        mock_entry.return_value = mock_entry_instance
-        mock_combo_instance = MagicMock()
-        mock_combo.return_value = mock_combo_instance
-        mock_textbox_instance = MagicMock()
-        mock_textbox.return_value = mock_textbox_instance
+        mock_entry.side_effect = lambda *a, **kw: MagicMock()
+        mock_combo.side_effect = lambda *a, **kw: MagicMock()
+        mock_textbox.side_effect = lambda *a, **kw: MagicMock()
         yield {
-            "entry": mock_entry_instance,
-            "combo": mock_combo_instance,
-            "textbox": mock_textbox_instance,
             "msgbox": mock_msgbox,
         }
 

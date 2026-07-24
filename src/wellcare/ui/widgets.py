@@ -50,8 +50,11 @@ class ToastNotification(ctk.CTkFrame):
         self.label.pack(fill="both", expand=True)
 
         # Place toast at bottom right of master window
-        self.place(relx=0.98, rely=0.95, anchor="se")
-        self.after(duration_ms, self._dismiss)
+        try:
+            self.place(relx=0.98, rely=0.95, anchor="se")
+            self.after(duration_ms, self._dismiss)
+        except Exception:  # noqa: S110
+            pass
 
     def _dismiss(self) -> None:
         self.destroy()

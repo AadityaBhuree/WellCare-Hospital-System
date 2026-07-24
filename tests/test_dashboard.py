@@ -5,6 +5,7 @@ checks work correctly without a display.
 """
 
 import tkinter  # noqa: F401
+from contextlib import ExitStack
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
@@ -17,25 +18,41 @@ if TYPE_CHECKING:
 @pytest.fixture(autouse=True)
 def _mock_tk():
     """Replace customtkinter, matplotlib, and seaborn with mocks."""
-    with (
-        patch("customtkinter.CTkFrame.__init__", return_value=None),
-        patch("customtkinter.CTkFrame.grid_columnconfigure"),
-        patch("customtkinter.CTkFrame.grid", return_value=None),
-        patch("customtkinter.CTkLabel.__init__", return_value=None),
-        patch("customtkinter.CTkButton.__init__", return_value=None),
-        patch("customtkinter.CTkOptionMenu.__init__", return_value=None),
-        patch("customtkinter.StringVar.__init__", return_value=None),
-        patch("customtkinter.get_appearance_mode", return_value="Light"),
+    with ExitStack() as stack:
+        stack.enter_context(patch("customtkinter.CTkFrame.__init__", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkFrame.grid_columnconfigure"))
+        stack.enter_context(patch("customtkinter.CTkFrame.grid", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkFrame.pack", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkFrame.place", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkLabel.__init__", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkLabel.configure", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkLabel.pack", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkLabel.grid", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkLabel.place", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkButton.__init__", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkButton.pack", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkButton.grid", return_value=None))
+        stack.enter_context(patch("customtkinter.CTkOptionMenu.__init__", return_value=None))
+        stack.enter_context(patch("customtkinter.StringVar.__init__", return_value=None))
+        stack.enter_context(patch("customtkinter.get_appearance_mode", return_value="Light"))
+
         # Matplotlib/seaborn mocks
-        patch("matplotlib.pyplot.subplots", return_value=(MagicMock(), [MagicMock(), MagicMock()])),
-        patch("matplotlib.pyplot.close"),
-        patch("matplotlib.pyplot.rcParams.update"),
-        patch("matplotlib.backends.backend_tkagg.FigureCanvasTkAgg") as mock_canvas_cls,
-        patch("seaborn.set_theme"),
-        patch("seaborn.color_palette", return_value=["red", "blue", "green"]),
-        patch("seaborn.barplot"),
-        patch("seaborn.lineplot"),
-    ):
+        stack.enter_context(
+            patch(
+                "matplotlib.pyplot.subplots",
+                return_value=(MagicMock(), [MagicMock(), MagicMock()]),
+            )
+        )
+        stack.enter_context(patch("matplotlib.pyplot.close"))
+        stack.enter_context(patch("matplotlib.pyplot.rcParams.update"))
+        mock_canvas_cls = stack.enter_context(
+            patch("src.wellcare.frames.dashboard.FigureCanvasTkAgg")
+        )
+        stack.enter_context(patch("seaborn.set_theme"))
+        stack.enter_context(patch("seaborn.color_palette", return_value=["red", "blue", "green"]))
+        stack.enter_context(patch("seaborn.barplot"))
+        stack.enter_context(patch("seaborn.lineplot"))
+
         mock_canvas = MagicMock()
         mock_canvas.get_tk_widget.return_value = MagicMock()
         mock_canvas_cls.return_value = mock_canvas

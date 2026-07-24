@@ -25,14 +25,18 @@ def animate_count_up(
     widget.configure(text=text)
 
     if next_val < target_val:
-        widget.after(
-            delay_ms,
-            lambda: animate_count_up(
-                widget,
-                target_val,
-                next_val,
-                steps,
+        try:
+            widget.after(
                 delay_ms,
-                formatter,
-            ),
-        )
+                lambda: animate_count_up(
+                    widget,
+                    target_val,
+                    next_val,
+                    steps,
+                    delay_ms,
+                    formatter,
+                ),
+            )
+        except Exception:
+            final_text = formatter(target_val) if formatter else str(target_val)
+            widget.configure(text=final_text)

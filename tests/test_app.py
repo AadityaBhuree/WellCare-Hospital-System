@@ -65,6 +65,8 @@ def app() -> "ClinicApp":
     app.dashboard_button = _make_mock_widget()
     app.new_patient_record_button = _make_mock_widget()
     app.search_button = _make_mock_widget()
+    app.appointments_button = _make_mock_widget()
+    app.doctors_button = _make_mock_widget()
     app.logout_button = _make_mock_widget()
     app.mode_switch = _make_mock_widget()
     app.mode_switch.get.return_value = False
@@ -156,7 +158,13 @@ class TestShowFrameByName:
 
     def test_denies_dashboard_when_logged_out(self, app) -> None:
         app.is_logged_in = False
-        with patch("src.wellcare.app.messagebox") as mock_msgbox:
+        from src.wellcare.frames import LoginFrame
+
+        with (
+            patch("src.wellcare.app.messagebox") as mock_msgbox,
+            patch.object(LoginFrame, "__init__", return_value=None),
+            patch.object(LoginFrame, "pack"),
+        ):
             app.show_frame_by_name("DashboardFrame")
             mock_msgbox.showwarning.assert_called_with(
                 "Access Denied",
@@ -165,7 +173,13 @@ class TestShowFrameByName:
 
     def test_denies_patient_entry_when_logged_out(self, app) -> None:
         app.is_logged_in = False
-        with patch("src.wellcare.app.messagebox") as mock_msgbox:
+        from src.wellcare.frames import LoginFrame
+
+        with (
+            patch("src.wellcare.app.messagebox") as mock_msgbox,
+            patch.object(LoginFrame, "__init__", return_value=None),
+            patch.object(LoginFrame, "pack"),
+        ):
             app.show_frame_by_name("PatientEntryFrame")
             mock_msgbox.showwarning.assert_called_with(
                 "Access Denied",
@@ -174,7 +188,13 @@ class TestShowFrameByName:
 
     def test_denies_search_when_logged_out(self, app) -> None:
         app.is_logged_in = False
-        with patch("src.wellcare.app.messagebox") as mock_msgbox:
+        from src.wellcare.frames import LoginFrame
+
+        with (
+            patch("src.wellcare.app.messagebox") as mock_msgbox,
+            patch.object(LoginFrame, "__init__", return_value=None),
+            patch.object(LoginFrame, "pack"),
+        ):
             app.show_frame_by_name("SearchFrame")
             mock_msgbox.showwarning.assert_called_with(
                 "Access Denied",
@@ -225,6 +245,8 @@ class TestUpdateNavButtons:
         app.dashboard_button.grid_forget.assert_called()
         app.new_patient_record_button.grid_forget.assert_called()
         app.search_button.grid_forget.assert_called()
+        app.appointments_button.grid_forget.assert_called()
+        app.doctors_button.grid_forget.assert_called()
         app.logout_button.grid_forget.assert_called()
         app.about_button.grid.assert_called_with(column=1, row=0, padx=15)
         app.login_screen_button.grid.assert_called_with(column=2, row=0, padx=15)
@@ -238,8 +260,10 @@ class TestUpdateNavButtons:
         app.dashboard_button.grid.assert_called_with(column=1, row=0, padx=15)
         app.new_patient_record_button.grid.assert_called_with(column=2, row=0, padx=15)
         app.search_button.grid.assert_called_with(column=3, row=0, padx=15)
-        app.about_button.grid.assert_called_with(column=4, row=0, padx=15)
-        app.logout_button.grid.assert_called_with(column=5, row=0, padx=15)
+        app.appointments_button.grid.assert_called_with(column=4, row=0, padx=15)
+        app.doctors_button.grid.assert_called_with(column=5, row=0, padx=15)
+        app.about_button.grid.assert_called_with(column=6, row=0, padx=15)
+        app.logout_button.grid.assert_called_with(column=7, row=0, padx=15)
 
     def test_logged_in_as_staff_hides_dashboard(self, app) -> None:
         app.is_logged_in = True
@@ -249,8 +273,10 @@ class TestUpdateNavButtons:
         app.dashboard_button.grid_forget.assert_called()
         app.new_patient_record_button.grid.assert_called_with(column=1, row=0, padx=15)
         app.search_button.grid.assert_called_with(column=2, row=0, padx=15)
-        app.about_button.grid.assert_called_with(column=3, row=0, padx=15)
-        app.logout_button.grid.assert_called_with(column=4, row=0, padx=15)
+        app.appointments_button.grid.assert_called_with(column=3, row=0, padx=15)
+        app.doctors_button.grid.assert_called_with(column=4, row=0, padx=15)
+        app.about_button.grid.assert_called_with(column=5, row=0, padx=15)
+        app.logout_button.grid.assert_called_with(column=6, row=0, padx=15)
 
 
 class TestLogoutAction:
@@ -259,14 +285,26 @@ class TestLogoutAction:
     def test_resets_state(self, app) -> None:
         app.is_logged_in = True
         app.current_user_role = "admin"
-        with patch("src.wellcare.app.messagebox"):
+        from src.wellcare.frames import HomeFrame
+
+        with (
+            patch("src.wellcare.app.messagebox"),
+            patch.object(HomeFrame, "__init__", return_value=None),
+            patch.object(HomeFrame, "pack"),
+        ):
             app._logout_action()
 
         assert app.is_logged_in is False
         assert app.current_user_role is None
 
     def test_shows_message(self, app) -> None:
-        with patch("src.wellcare.app.messagebox") as mock_msgbox:
+        from src.wellcare.frames import HomeFrame
+
+        with (
+            patch("src.wellcare.app.messagebox") as mock_msgbox,
+            patch.object(HomeFrame, "__init__", return_value=None),
+            patch.object(HomeFrame, "pack"),
+        ):
             app._logout_action()
             mock_msgbox.showinfo.assert_called_with(
                 "Logout",
@@ -279,6 +317,7 @@ class TestLogoutAction:
         with (
             patch("src.wellcare.app.messagebox"),
             patch.object(HomeFrame, "__init__", return_value=None),
+            patch.object(HomeFrame, "pack"),
         ):
             app._logout_action()
             assert app.current_frame is not None
