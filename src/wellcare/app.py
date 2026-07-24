@@ -198,10 +198,12 @@ class ClinicApp(ctk.CTk):
         self.after(1000, self._update_time)
 
     def refresh_dashboard_if_open(self) -> None:
+        """Trigger chart re-rendering if the active frame is DashboardFrame."""
         if isinstance(self.current_frame, DashboardFrame):
             self.current_frame._render_charts()
 
     def update_nav_buttons(self) -> None:
+        """Show or hide top navigation menu options based on auth state and user role."""
         if self.is_logged_in:
             self.login_screen_button.grid_forget()
             c_idx = 1

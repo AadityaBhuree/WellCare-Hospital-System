@@ -1,3 +1,5 @@
+"""PDF document generation for prescriptions and billing receipts."""
+
 import datetime
 import re
 from pathlib import Path

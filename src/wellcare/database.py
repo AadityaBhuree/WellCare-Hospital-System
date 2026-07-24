@@ -170,6 +170,7 @@ class Database:
             logger.error("Failed to log audit action: %s", e)
 
     def add_patient(self, data: tuple[str, ...]) -> bool:
+        """Insert a new patient record into database."""
         if self.cur is None or self.conn is None:
             return False
         try:
@@ -274,6 +275,7 @@ class Database:
             return False
 
     def search_patient(self, keyword: str) -> list[tuple[Any, ...]]:
+        """Search patients by first or last name using fuzzy match."""
         if self.cur is None:
             return []
         safe_keyword = keyword.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -288,6 +290,7 @@ class Database:
         return self.cur.fetchall()
 
     def delete_patient(self, patient_id: int | str) -> bool:
+        """Delete patient record and associated records (appointments, bills, medical history)."""
         if self.cur is None or self.conn is None:
             return False
         try:

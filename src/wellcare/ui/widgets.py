@@ -116,6 +116,7 @@ class KPICard(ctk.CTkFrame):
             ).pack(anchor="w", padx=Theme.PAD_MD, pady=(0, Theme.PAD_MD))
 
     def update_value(self, new_value: str) -> None:
+        """Update the displayed metric value text."""
         self.value_label.configure(text=new_value)
 
 
@@ -204,11 +205,13 @@ class FormField(ctk.CTkFrame):
         self.error_label.pack(anchor="w", pady=(2, 0))
 
     def get_value(self) -> str:
+        """Extract trimmed text value from underlying widget."""
         if self.widget_type == "textbox":
             return cast(str, self.input_widget.get("1.0", "end-1c")).strip()
         return cast(str, self.input_widget.get()).strip()
 
     def set_error(self, message: str) -> None:
+        """Display error validation message and highlight input border."""
         self.error_label.configure(text=message)
         if message:
             self.input_widget.configure(border_color=Theme.DANGER)
@@ -216,6 +219,7 @@ class FormField(ctk.CTkFrame):
             self.input_widget.configure(border_color=Theme.BORDER_LIGHT)
 
     def clear(self) -> None:
+        """Reset input widget contents and clear error status."""
         self.set_error("")
 
         if self.widget_type == "combo":
