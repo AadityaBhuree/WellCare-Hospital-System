@@ -68,6 +68,25 @@ class Patient:
         """Return formatted full name."""
         return f"{self.first_name} {self.last_name}".strip()
 
+    def to_dict(self) -> dict[str, str | int | float | None]:
+        """Convert patient instance to dictionary representation."""
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "age": self.age,
+            "gender": self.gender,
+            "blood_group": self.blood_group,
+            "weight": self.weight,
+            "mobile": self.mobile,
+            "email": self.email,
+            "address": self.address,
+            "pincode": self.pincode,
+            "symptoms": self.symptoms,
+            "created_at": str(self.created_at) if self.created_at else "",
+        }
+
+
 
 @dataclass
 class Appointment:
