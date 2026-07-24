@@ -3,6 +3,7 @@
 from src.wellcare.frames.about import AboutFrame
 from src.wellcare.frames.appointments import AppointmentsFrame
 from src.wellcare.frames.dashboard import DashboardFrame
+from src.wellcare.frames.doctors import DoctorsFrame
 from src.wellcare.frames.home import HomeFrame
 from src.wellcare.frames.login import LoginFrame
 from src.wellcare.frames.patient_entry import PatientEntryFrame
@@ -12,8 +13,10 @@ __all__ = [
     "AboutFrame",
     "AppointmentsFrame",
     "DashboardFrame",
+    "DoctorsFrame",
     "HomeFrame",
     "LoginFrame",
     "PatientEntryFrame",
     "SearchFrame",
 ]
+
