@@ -1,139 +1,163 @@
 # WellCare Hospital Management System
 
+[![CI](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/ci.yml/badge.svg)](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/ci.yml)
+[![Build Executable](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/build.yml/badge.svg)](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/build.yml)
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
-A professional, object-oriented Clinic Management System designed to streamline patient records and provide real-time healthcare analytics. This project demonstrates advanced GUI development with `CustomTkinter`, data visualization, and robust database management.
+A professional, object-oriented Clinic Management System designed to streamline patient records, appointment scheduling, and real-time healthcare analytics. This project demonstrates enterprise-grade Python desktop application architecture using `CustomTkinter`, `SQLite3`, `FPDF2`, and comprehensive `pytest` testing.
+
+---
 
 ## 🌟 Key Features
 
-- **Professional Dashboard**: Real-time analytics with dynamic charts (Age distribution, Gender demographics, Blood group trends)
-- **Intelligent Auto-Refresh**: Live data syncing every 10 seconds and instantaneous updates across frames upon data mutation
-- **Role-Based Access Control (RBAC)**: Secure access levels for Administrators (Analytical views) and Medical Staff (Data entry)
-- **Automated Documentation**: High-quality PDF prescription generation with structured patient data
-- **Robust Data Layer**: Reliable local storage using SQLite with optimized queries
-- **Modern UI/UX**: Fluid interface with Light/Dark mode support and responsive design
-- **Modular Architecture**: Clean separation of concerns with modular package structure
+- **Real-Time Analytics Dashboard**: Visual demographics with dynamic charts (Age distribution, Gender demographics, Blood group trends) powered by Matplotlib & Seaborn.
+- **Appointment Scheduling**: Interactive appointment booking, doctor schedule lookup, and status tracking (Scheduled, Completed, Cancelled).
+- **Intelligent Auto-Refresh**: Live data syncing every 10 seconds and instantaneous frame updates upon data mutations.
+- **Role-Based Access Control (RBAC)**: Secure access tiers for Administrators (Analytics & System Overview) and Medical Staff (Patient records, appointments, and prescriptions).
+- **Automated Prescription PDF Generation**: High-quality structured PDF prescription document generation using `FPDF2`.
+- **Thread-Safe Caching**: In-memory `TTLCache` to reduce redundant database read operations.
+- **Robust Data & Security Layer**: Password hashing via `bcrypt`, environment variable configuration via `python-dotenv`, and parameterized SQL query execution.
+- **Modern UI/UX**: Fluid desktop GUI supporting Light/Dark mode transitions with responsive frame layouts.
+
+---
 
 ## 🛠️ Technical Stack
 
-- **Frontend**: CustomTkinter (Modernized Tkinter wrapping)
+- **GUI Framework**: CustomTkinter
 - **Data Visualization**: Matplotlib & Seaborn
-- **Backend/Logic**: Python 3.8+ (Object-Oriented Design)
-- **Database**: SQLite3
-- **Document Generation**: FPDF2
-- **Testing**: pytest
-- **Code Quality**: ruff (linter & formatter)
+- **Backend / Logic**: Python 3.8+ (Object-Oriented Design)
+- **Database**: SQLite3 with thread-safe connection handling
+- **Security & Config**: `bcrypt`, `python-dotenv`
+- **PDF Engine**: FPDF2
+- **Code Quality & Testing**: `pytest`, `pytest-cov`, `ruff`, `mypy`
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- Pip (Python Package Manager)
+- Python 3.8+
+- `pip` (Python Package Manager)
 
 ### Installation
 
-1. **Clone the project**
-
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/AadityaBhuree/WellCare-Hospital-System.git
    cd WellCare-Hospital-System
    ```
 
-2. **Automated Setup (Recommended)**
-   Run the included setup script to create a virtual environment and install dependencies:
-
-   ```bash
-   # On Windows
+2. **Automated Setup (Windows)**:
+   ```cmd
    .\setup.bat
    ```
 
-3. **Manual Setup**
-
+3. **Manual Setup**:
    ```bash
    python -m venv .venv
    # Activate:
-   .venv\Scripts\activate     # On Windows
-   source .venv/bin/activate  # On Linux/macOS
+   .venv\Scripts\activate     # Windows
+   source .venv/bin/activate  # Linux/macOS
+
    pip install -r requirements.txt
-   pip install -r requirements-dev.txt  # Dev dependencies (optional)
+   pip install -r requirements-dev.txt
    ```
 
-### Execution
+### Running the Application
 
 ```bash
 python -m src.wellcare
-# Or
+# or
 python src/wellcare/__main__.py
 ```
 
+---
+
 ## 🔐 Default Credentials
 
-> **⚠️ IMPORTANT**: Change these immediately in production!
+> **⚠️ Security Warning**: Environment variables can be configured in `.env` (copied from `.env.example`).
 
-| Role          | User ID | Password |
-|---------------|---------|----------|
-| **Administrator** | `admin`   | `123`      |
-| **Staff Member**  | `staff`   | `123`      |
+| Role | User ID | Password |
+| :--- | :--- | :--- |
+| **Administrator** | `admin` | `123` |
+| **Medical Staff** | `staff` | `123` |
 
-Credentials are configured via environment variables (see `.env.example`).
+---
 
 ## 🏗️ Project Architecture
 
 ```
-wellcare-hospital-system/
-├── src/wellcare/           # Main application package
+WellCare-Hospital-System/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml              # CI test, lint, format & type-check pipeline
+│       └── build.yml           # Executable packaging pipeline (PyInstaller)
+├── src/wellcare/               # Core application package
 │   ├── __init__.py
-│   ├── __main__.py         # Entry point
-│   ├── app.py              # Central controller (ClinicApp)
-│   ├── config.py           # Configuration management
-│   ├── database.py         # Database operations
-│   ├── logger.py           # Logging setup
-│   ├── frames/             # UI frame components
-│   │   ├── home.py
-│   │   ├── about.py
-│   │   ├── login.py
-│   │   ├── dashboard.py
-│   │   ├── patient_entry.py
-│   │   └── search.py
-│   └── utils/              # Utilities
-│       ├── validators.py   # Input validation
-│       └── pdf.py          # PDF generation
-├── tests/                  # Test suite
-├── assets/                 # Static assets (images)
-├── .env.example            # Environment template
+│   ├── __main__.py             # Main entry point
+│   ├── app.py                  # Controller (ClinicApp)
+│   ├── config.py               # Environment configuration
+│   ├── database.py             # SQLite database layer with caching & schema setup
+│   ├── logger.py               # Centralized logging setup
+│   ├── frames/                 # Modular CustomTkinter UI frames
+│   │   ├── home.py             # Landing page
+│   │   ├── about.py            # About & system info
+│   │   ├── login.py            # Authentication frame
+│   │   ├── dashboard.py        # Analytics & Matplotlib visualizations
+│   │   ├── patient_entry.py    # Patient registration & PDF print
+│   │   ├── search.py           # Patient search & management
+│   │   └── appointments.py     # Appointment booking & scheduling
+│   └── utils/                  # Utility helpers
+│       ├── cache.py            # Thread-safe TTL Cache
+│       ├── pdf.py              # FPDF2 Prescription generator
+│       └── validators.py       # Input validation (Email, Phone, Pincode, Age)
+├── tests/                      # Unit & integration test suite (120+ tests)
+├── assets/                     # UI logos, icons, and themes
+├── .env.example                # Environment variables template
+├── CHANGELOG.md                # Project release history
+├── CONTRIBUTING.md             # Developer contribution guidelines
+├── pyproject.toml              # Tool configurations (ruff, mypy, pytest)
 └── README.md
 ```
 
-The application follows a **Controller-Frame Pattern**:
+---
 
-- `ClinicApp` (`app.py`): Central controller managing state, navigation, and frame transitions
-- `Database` (`database.py`): Decoupled data access layer handling all SQL operations
-- `Frames` (`frames/`): Modular UI components that interact with the controller
-- `Config` (`config.py`): Centralized configuration via environment variables
-
-## 🧪 Running Tests
+## 🧪 Testing & Quality Assurance
 
 ```bash
+# Run unit & integration tests
 pytest
-# With coverage:
-pytest --cov=src.wellcare
+
+# Run tests with code coverage report
+pytest --cov=src.wellcare --cov-report=term-missing
+
+# Run code linter and formatting checks
+ruff check src/ tests/
+ruff format --check src/ tests/
+
+# Run static type checking
+mypy src/
 ```
 
-## 🔍 Code Quality
+---
+
+## 📦 Building Executables
+
+To bundle the application into a standalone Windows executable using PyInstaller:
 
 ```bash
-# Lint
-ruff check src/
-# Format
-ruff format src/
+pyinstaller --noconfirm --onedir --windowed --name "WellCare" --add-data "assets;assets" src/wellcare/__main__.py
 ```
+
+The output executable will be placed in the `dist/WellCare/` folder.
+
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
 *Developed by Aditya Bhure*
