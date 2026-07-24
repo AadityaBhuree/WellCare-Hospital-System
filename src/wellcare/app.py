@@ -23,6 +23,7 @@ from src.wellcare.database import Database
 from src.wellcare.frames import (
     AboutFrame,
     AppointmentsFrame,
+    BillingFrame,
     DashboardFrame,
     DoctorsFrame,
     HomeFrame,
@@ -62,61 +63,59 @@ class ClinicApp(ctk.CTk):
         self.show_frame_by_name("HomeFrame")
 
     def _build_ui(self) -> None:
-        # ── Top Banner ────────────────────────────────────────
-        self.upper_frame = ctk.CTkFrame(self, fg_color="#1e85da", height=120)
-        self.upper_frame.pack(fill="x")
+        # ── Header Frame ─────────────────────────────────────
+        self.upper_frame = ctk.CTkFrame(self, fg_color="#1a252f", height=100, corner_radius=0)
+        self.upper_frame.pack(side="top", fill="x")
+        self.upper_frame.pack_propagate(False)
 
-        try:
-            img = Image.open(ASSETS_DIR / "wellcare.png")
-            logo = ctk.CTkImage(dark_image=img, light_image=img, size=(200, 190))
-            ctk.CTkLabel(
-                self.upper_frame,
-                text="",
-                image=logo,
-            ).place(anchor="nw", rely=-0.19, relx=0.02)
-        except Exception as e:
-            logger.warning("Could not load logo: %s", e)
-
-        ctk.CTkLabel(
+        logo_image = ctk.CTkImage(
+            light_image=Image.open(ASSETS_DIR / "logo.png"),
+            dark_image=Image.open(ASSETS_DIR / "logo.png"),
+            size=(80, 80),
+        )
+        self.logo_label = ctk.CTkLabel(
             self.upper_frame,
-            text="WellCare Hospital",
-            font=("courier new", 55, "bold"),
+            image=logo_image,
+            text="",
+        )
+        self.logo_label.pack(side="left", padx=20, pady=10)
+
+        self.title_label = ctk.CTkLabel(
+            self.upper_frame,
+            text="WellCare Hospital Management System",
+            font=("Roboto", 24, "bold"),
             text_color="white",
-        ).pack(pady=10)
-
-        ctk.CTkLabel(
-            self.upper_frame,
-            text="Your health, our priority.",
-            font=("Roboto", 15, "bold"),
-            text_color="#e7dada",
-        ).pack(pady=(0, 5))
+        )
+        self.title_label.pack(side="left", padx=10, pady=10)
 
         self.date_label = ctk.CTkLabel(
             self.upper_frame,
-            font=("", 14),
-            text_color="#e7dada",
-        )
-        self.date_label.place(relx=0.98, rely=0.03, anchor="ne")
-
-        self.mode_switch = ctk.CTkSwitch(
-            self.upper_frame,
-            text="Dark Mode",
+            text="",
+            font=("Roboto", 14),
             text_color="white",
-            progress_color="#52bb6c",
-            command=self._toggle_mode,
         )
-        self.mode_switch.place(relx=0.98, rely=0.3, anchor="ne")
-
+        self.date_label.pack(side="right", padx=20, pady=10)
         self._update_time()
 
-        # ── Navigation Buttons ────────────────────────────────
-        self.button_frame = ctk.CTkFrame(self.upper_frame, fg_color="transparent")
-        self.button_frame.pack(pady=(5, 10))
+        # ── Navigation Frame ─────────────────────────────────
+        self.button_frame = ctk.CTkFrame(self, fg_color="#2c3e50", height=50, corner_radius=0)
+        self.button_frame.pack(side="top", fill="x")
+
+        # Dark Mode Switcher
+        self.mode_switch = ctk.CTkSwitch(
+            self.button_frame,
+            text="Dark Mode",
+            command=self._toggle_mode,
+            text_color="white",
+            font=("Roboto", 12),
+        )
+        self.mode_switch.grid(column=0, row=0, padx=15, pady=10)
 
         nav_args = {
+            "font": ("Roboto", 14, "bold"),
             "fg_color": "transparent",
-            "font": ("Roboto", 15, "bold"),
-            "hover": True,
+            "text_color": "white",
+            "hover_color": "#34495e",
             "cursor": "hand2",
         }
 
@@ -126,8 +125,6 @@ class ClinicApp(ctk.CTk):
             text="HOME",
             **nav_args,
         )
-        self.home_screen_button.grid(column=0, row=0, padx=15)
-
         self.about_button = ctk.CTkButton(
             self.button_frame,
             command=lambda: self.show_frame_by_name("AboutFrame"),
@@ -170,6 +167,12 @@ class ClinicApp(ctk.CTk):
             text="DOCTORS",
             **nav_args,
         )
+        self.billing_button = ctk.CTkButton(
+            self.button_frame,
+            command=lambda: self.show_frame_by_name("BillingFrame"),
+            text="BILLING",
+            **nav_args,
+        )
         self.logout_button = ctk.CTkButton(
             self.button_frame,
             command=self._logout_action,
@@ -209,14 +212,16 @@ class ClinicApp(ctk.CTk):
             self.search_button.grid(column=c_idx + 1, row=0, padx=15)
             self.appointments_button.grid(column=c_idx + 2, row=0, padx=15)
             self.doctors_button.grid(column=c_idx + 3, row=0, padx=15)
-            self.about_button.grid(column=c_idx + 4, row=0, padx=15)
-            self.logout_button.grid(column=c_idx + 5, row=0, padx=15)
+            self.billing_button.grid(column=c_idx + 4, row=0, padx=15)
+            self.about_button.grid(column=c_idx + 5, row=0, padx=15)
+            self.logout_button.grid(column=c_idx + 6, row=0, padx=15)
         else:
             self.dashboard_button.grid_forget()
             self.new_patient_record_button.grid_forget()
             self.search_button.grid_forget()
             self.appointments_button.grid_forget()
             self.doctors_button.grid_forget()
+            self.billing_button.grid_forget()
             self.logout_button.grid_forget()
 
             self.about_button.grid(column=1, row=0, padx=15)
@@ -239,6 +244,7 @@ class ClinicApp(ctk.CTk):
             "SearchFrame": SearchFrame,
             "AppointmentsFrame": AppointmentsFrame,
             "DoctorsFrame": DoctorsFrame,
+            "BillingFrame": BillingFrame,
         }
 
         frame_class: Any = frame_map.get(frame_class_name)
@@ -253,6 +259,7 @@ class ClinicApp(ctk.CTk):
             SearchFrame,
             AppointmentsFrame,
             DoctorsFrame,
+            BillingFrame,
         ):
             messagebox.showwarning("Access Denied", "Please login first.")
             return self.show_frame_by_name("LoginFrame")

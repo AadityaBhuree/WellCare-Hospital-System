@@ -72,3 +72,13 @@ STATUS: ✅ COMPLETED
 - [x] Full application test run & verification
 - [x] Code review pass with ruff & mypy
 - [x] Final commit and push
+
+## PHASE 8: Patient Billing & Invoicing System ✅
+STATUS: ✅ COMPLETED
+- [x] Add Bill dataclass & PaymentStatus enum in models.py
+- [x] Add billing table and database CRUD + statistics methods
+- [x] Create BillingFrame UI component with revenue KPI cards & invoice management
+- [x] Integrate BillingFrame in navigation controller & app layout
+- [x] Write unit tests for billing DB operations and BillingFrame UI
+- [x] Verify full test suite passes (144 tests passing)
+- [x] Commit and push to GitHub

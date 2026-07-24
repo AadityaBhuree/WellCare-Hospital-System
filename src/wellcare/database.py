@@ -10,7 +10,7 @@ from typing import Any, cast
 from src.wellcare.cache import TTLCache
 from src.wellcare.config import DATABASE_PATH
 from src.wellcare.logger import logger
-from src.wellcare.models import Appointment, Patient
+from src.wellcare.models import Appointment, Bill, Patient
 
 
 class Database:
@@ -453,3 +453,96 @@ class Database:
         except Exception as err:
             logger.error("Error toggling status for doctor %d: %s", doctor_id, err)
             return False
+
+    # ── Billing Operations ──────────────────────────────────────────────
+
+    def add_bill(self, bill: Bill) -> int | None:
+        """Create a new billing record and return inserted bill ID."""
+        if self.cur is None or self.conn is None:
+            return None
+        try:
+            self.cur.execute(
+                """
+                INSERT INTO billing (patient_id, appointment_id, amount, description, status)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    bill.patient_id,
+                    bill.appointment_id,
+                    bill.amount,
+                    bill.description,
+                    bill.status,
+                ),
+            )
+            self.conn.commit()
+            bill_id = self.cur.lastrowid
+            logger.info("Created bill #%s for patient ID %s", bill_id, bill.patient_id)
+            return bill_id
+        except Exception as err:
+            logger.error("Error creating bill for patient %s: %s", bill.patient_id, err)
+            return None
+
+    def get_bills(self, patient_id: int | None = None) -> list[tuple[Any, ...]]:
+        """Retrieve list of billing records joined with patient names."""
+        if self.cur is None:
+            return []
+        query = """
+            SELECT b.id, b.patient_id, (p.first_name || ' ' || p.last_name) as patient_name,
+                   b.appointment_id, b.amount, b.description, b.status, b.created_at
+            FROM billing b
+            LEFT JOIN patients p ON b.patient_id = p.id
+        """
+        params: list[Any] = []
+        if patient_id is not None:
+            query += " WHERE b.patient_id = ?"
+            params.append(patient_id)
+        query += " ORDER BY b.id DESC"
+        self.cur.execute(query, params)
+        return self.cur.fetchall()
+
+    def update_bill_status(self, bill_id: int, status: str) -> bool:
+        """Update payment status of a bill."""
+        if self.cur is None or self.conn is None:
+            return False
+        try:
+            self.cur.execute(
+                "UPDATE billing SET status = ? WHERE id = ?",
+                (status, bill_id),
+            )
+            self.conn.commit()
+            return self.cur.rowcount > 0
+        except Exception as err:
+            logger.error("Error updating bill #%d status: %s", bill_id, err)
+            return False
+
+    def get_billing_stats(self) -> dict[str, float | int]:
+        """Compute summary statistics for hospital financial billing."""
+        if self.cur is None:
+            return {
+                "total_revenue": 0.0,
+                "pending_amount": 0.0,
+                "paid_count": 0,
+                "pending_count": 0,
+            }
+        self.cur.execute("SELECT status, amount FROM billing")
+        rows = self.cur.fetchall()
+        total_rev = 0.0
+        pending_amt = 0.0
+        paid_cnt = 0
+        pending_cnt = 0
+
+        for status, amt in rows:
+            amount = float(amt or 0.0)
+            if status == "Paid":
+                total_rev += amount
+                paid_cnt += 1
+            elif status in ("Pending", "Partial"):
+                pending_amt += amount
+                pending_cnt += 1
+
+        return {
+            "total_revenue": total_rev,
+            "pending_amount": pending_amt,
+            "paid_count": paid_cnt,
+            "pending_count": pending_cnt,
+        }

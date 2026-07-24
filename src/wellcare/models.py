@@ -127,3 +127,15 @@ class Bill:
     description: str = ""
     status: str = PaymentStatus.PENDING.value
     created_at: datetime | None = None
+
+    def to_dict(self) -> dict[str, str | int | float | None]:
+        """Convert bill instance to dictionary representation."""
+        return {
+            "id": self.id,
+            "patient_id": self.patient_id,
+            "appointment_id": self.appointment_id,
+            "amount": self.amount,
+            "description": self.description,
+            "status": self.status,
+            "created_at": str(self.created_at) if self.created_at else "",
+        }

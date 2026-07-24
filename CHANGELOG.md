@@ -5,6 +5,15 @@ All notable changes to the WellCare Hospital Management System project will be d
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-24
+
+### Added
+- **Patient Billing & Invoicing Subsystem**: New `BillingFrame` UI allowing hospital staff and administrators to generate invoices, view pending receivables, track total revenue, and process payments.
+- **Financial Statistics & Database API**: SQLite database operations for invoice creation (`add_bill`), status updates (`update_bill_status`), and financial KPI aggregation (`get_billing_stats`).
+- **Doctor Directory Management**: Interactive doctor management UI frame for managing medical specializations, doctor schedules, and contact details.
+- **Record Export Utilities**: Export patient records to structured CSV and JSON formats with comprehensive data validation.
+- **Expanded Test Coverage**: Added pytest test suites for billing database logic (`test_billing_db.py`), billing frame UI (`test_billing_frame.py`), and doctors directory (`test_doctors_frame.py`), raising total passing tests to 144.
+
 ## [1.0.0] - 2026-07-24
 
 ### Added
