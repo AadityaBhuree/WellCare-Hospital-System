@@ -123,8 +123,15 @@ class Database:
             );
         """)
 
+        # Performance Indexes
+        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_patients_mobile ON patients(mobile);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_patients_last_name ON patients(last_name);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_appointments_patient ON appointments(patient_id);")
+        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status);")
+
         if self.conn:
             self.conn.commit()
+
 
     def log_action(self, user_id: str, action: str, details: str = "") -> None:
         """Log audit trail event."""
