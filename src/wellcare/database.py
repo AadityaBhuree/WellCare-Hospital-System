@@ -125,13 +125,18 @@ class Database:
 
         # Performance Indexes
         self.cur.execute("CREATE INDEX IF NOT EXISTS idx_patients_mobile ON patients(mobile);")
-        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_patients_last_name ON patients(last_name);")
-        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_appointments_patient ON appointments(patient_id);")
-        self.cur.execute("CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status);")
+        self.cur.execute(
+            "CREATE INDEX IF NOT EXISTS idx_patients_last_name ON patients(last_name);"
+        )
+        self.cur.execute(
+            "CREATE INDEX IF NOT EXISTS idx_appointments_patient ON appointments(patient_id);"
+        )
+        self.cur.execute(
+            "CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status);"
+        )
 
         if self.conn:
             self.conn.commit()
-
 
     def log_action(self, user_id: str, action: str, details: str = "") -> None:
         """Log audit trail event."""
@@ -378,4 +383,73 @@ class Database:
             return self.cur.rowcount > 0
         except Exception as e:
             logger.error("Failed to update appointment %s status: %s", appt_id, e)
+            return False
+
+    def add_doctor(
+        self,
+        name: str,
+        specialization: str,
+        phone: str = "",
+        email: str = "",
+        available_days: str = "Mon,Tue,Wed,Thu,Fri",
+    ) -> bool:
+        """Add a new doctor to the database."""
+        if self.cur is None or self.conn is None:
+            return False
+        try:
+            self.cur.execute(
+                """
+                INSERT INTO doctors (name, specialization, phone, email, available_days, is_active)
+                VALUES (?, ?, ?, ?, ?, 1)
+                """,
+                (name, specialization, phone, email, available_days),
+            )
+            self.conn.commit()
+            logger.info("Doctor added successfully: %s (%s)", name, specialization)
+            return True
+        except Exception as err:
+            logger.error("Error adding doctor %s: %s", name, err)
+            return False
+
+    def get_all_doctors(self, active_only: bool = True) -> list[tuple[Any, ...]]:
+        """Retrieve list of doctors from database."""
+        if self.cur is None:
+            return []
+        query = (
+            "SELECT id, name, specialization, phone, email, available_days, is_active FROM doctors"
+        )
+        if active_only:
+            query += " WHERE is_active = 1"
+        query += " ORDER BY name ASC"
+        self.cur.execute(query)
+        return self.cur.fetchall()
+
+    def get_doctors_by_specialization(self, spec: str) -> list[tuple[Any, ...]]:
+        """Filter active doctors by medical specialization."""
+        if self.cur is None:
+            return []
+        self.cur.execute(
+            """
+            SELECT id, name, specialization, phone, email, available_days, is_active
+            FROM doctors
+            WHERE is_active = 1 AND LOWER(specialization) LIKE ?
+            ORDER BY name ASC
+            """,
+            (f"%{spec.lower()}%",),
+        )
+        return self.cur.fetchall()
+
+    def toggle_doctor_status(self, doctor_id: int, is_active: bool) -> bool:
+        """Enable or disable a doctor's active status."""
+        if self.cur is None or self.conn is None:
+            return False
+        try:
+            self.cur.execute(
+                "UPDATE doctors SET is_active = ? WHERE id = ?",
+                (1 if is_active else 0, doctor_id),
+            )
+            self.conn.commit()
+            return self.cur.rowcount > 0
+        except Exception as err:
+            logger.error("Error toggling status for doctor %d: %s", doctor_id, err)
             return False
