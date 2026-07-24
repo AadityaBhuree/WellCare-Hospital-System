@@ -116,4 +116,13 @@ STATUS: ✅ COMPLETED
 - [x] Verify full test suite passes (157 tests passing)
 - [x] Commit and push to GitHub
 
+## PHASE 12: Patient Editing Capabilities & Verification ✅
+STATUS: ✅ COMPLETED
+- [x] Add Patient ID lookup & auto-fill form handler (_load_patient_for_edit) in PatientEntryFrame UI
+- [x] Update _save_action to support both add_patient and update_patient database flows
+- [x] Add unit test test_load_patient_for_edit in test_patient_entry_frame.py
+- [x] Verify full test suite passes (158 tests passing)
+- [x] Commit and push to GitHub
+
+
 

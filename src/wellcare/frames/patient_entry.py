@@ -17,18 +17,37 @@ class PatientEntryFrame(ctk.CTkFrame):
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.editing_patient_id: int | None = None
         self._build_ui()
 
     def _build_ui(self) -> None:
         ctk.CTkLabel(
             self,
-            text="Patient Details",
+            text="Patient Details & Registration",
             font=Theme.FONT_HEADING,
             text_color=Theme.PRIMARY,
-        ).grid(pady=(20, 25), columnspan=2, row=0)
+        ).grid(pady=(15, 10), columnspan=2, row=0)
+
+        # Lookup/Edit Bar
+        edit_bar = ctk.CTkFrame(self, fg_color="transparent")
+        edit_bar.grid(row=1, column=0, columnspan=2, pady=(0, 10))
+
+        self.edit_id_entry = ctk.CTkEntry(
+            edit_bar, placeholder_text="Patient ID to Edit", width=140, height=32
+        )
+        self.edit_id_entry.pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            edit_bar,
+            text="Load Patient",
+            command=self._load_patient_for_edit,
+            fg_color=Theme.PRIMARY_ACCENT,
+            height=32,
+            width=100,
+        ).pack(side="left", padx=5)
 
         self.status_label = ctk.CTkLabel(self, text="", font=Theme.FONT_BODY_BOLD)
-        self.status_label.grid(row=1, column=0, columnspan=2, pady=(0, 10))
+        self.status_label.grid(row=2, column=0, columnspan=2, pady=(0, 10))
 
         fields: list[tuple[str, str, Any, list[str]] | tuple[str, str, Any]] = [
             ("First Name", "first_name", ctk.CTkEntry),
@@ -50,7 +69,7 @@ class PatientEntryFrame(ctk.CTkFrame):
         ]
 
         self.inputs: dict[str, Any] = {}
-        row_idx = 2
+        row_idx = 3
 
         for field in fields:
             label_text, var_name, widget_type = field[0], field[1], field[2]
@@ -59,7 +78,7 @@ class PatientEntryFrame(ctk.CTkFrame):
                 text=f"{label_text}   -",
                 font=Theme.FONT_BODY_BOLD,
                 text_color=Theme.TEXT_PRIMARY_LIGHT,
-            ).grid(row=row_idx, column=0, padx=100, pady=10, sticky="e")
+            ).grid(row=row_idx, column=0, padx=100, pady=8, sticky="e")
 
             if widget_type == ctk.CTkComboBox:
                 values = field[3] if len(field) > 3 else []
@@ -75,7 +94,7 @@ class PatientEntryFrame(ctk.CTkFrame):
                     self,
                     border_color=Theme.BORDER_LIGHT,
                     width=250,
-                    height=80,
+                    height=70,
                     border_width=1,
                 )
             else:
@@ -87,7 +106,7 @@ class PatientEntryFrame(ctk.CTkFrame):
                     border_width=1,
                 )
 
-            widget.grid(row=row_idx, column=1, padx=10, pady=10, sticky="w")
+            widget.grid(row=row_idx, column=1, padx=10, pady=8, sticky="w")
             self.inputs[var_name] = widget
             row_idx += 1
 
@@ -98,14 +117,14 @@ class PatientEntryFrame(ctk.CTkFrame):
             text_color="#e9e9e9",
             fg_color=Theme.DANGER,
             hover_color=Theme.DANGER_HOVER,
-        ).grid(row=row_idx, column=0, padx=30, pady=30, sticky="e")
+        ).grid(row=row_idx, column=0, padx=30, pady=20, sticky="e")
 
         btn_container = ctk.CTkFrame(self, fg_color="transparent")
-        btn_container.grid(row=row_idx, column=1, padx=30, pady=30, sticky="w")
+        btn_container.grid(row=row_idx, column=1, padx=30, pady=20, sticky="w")
 
         ctk.CTkButton(
             btn_container,
-            text="Save Only",
+            text="Save Record",
             command=self._save_action,
             text_color="#e9e9e9",
             fg_color=Theme.SUCCESS,
@@ -130,6 +149,34 @@ class PatientEntryFrame(ctk.CTkFrame):
         if isinstance(widget, ctk.CTkTextbox):
             return cast(str, widget.get("1.0", "end-1c")).strip()
         return cast(str, widget.get()).strip()
+
+    def _load_patient_for_edit(self) -> None:
+        pid_str = self.edit_id_entry.get().strip()
+        if not pid_str.isdigit():
+            self._display_status("Enter a valid numeric Patient ID.", "red")
+            return
+
+        patient = self.controller.db.get_patient_by_id(int(pid_str))
+        if not patient:
+            self._display_status(f"Patient ID #{pid_str} not found.", "red")
+            return
+
+        self.editing_patient_id = patient.id
+        self._clear_entries(keep_edit_id=True)
+
+        self.inputs["first_name"].insert(0, patient.first_name)
+        self.inputs["last_name"].insert(0, patient.last_name)
+        self.inputs["age"].set(str(patient.age) if patient.age > 0 else "Select Age")
+        self.inputs["gender"].set(patient.gender if patient.gender else "Select")
+        self.inputs["blood"].set(patient.blood_group if patient.blood_group else "Select")
+        self.inputs["weight"].insert(0, str(patient.weight) if patient.weight > 0 else "")
+        self.inputs["symptoms"].insert("1.0", patient.symptoms)
+        self.inputs["address"].insert("1.0", patient.address)
+        self.inputs["pincode"].insert(0, patient.pincode)
+        self.inputs["email"].insert(0, patient.email)
+        self.inputs["mobile"].insert(0, patient.mobile)
+
+        self._display_status(f"Loaded Patient #{patient.id} for editing.", "green")
 
     def _save_action(self) -> bool:
         vals = {k: self._get_val(k) for k in self.inputs}
@@ -157,20 +204,26 @@ class PatientEntryFrame(ctk.CTkFrame):
                 vals["pincode"],
                 vals["symptoms"],
             )
-            success = self.controller.db.add_patient(data)
+
+            if self.editing_patient_id is not None:
+                success = self.controller.db.update_patient(self.editing_patient_id, data)
+                msg = f"Patient #{self.editing_patient_id} Updated Successfully!"
+                err_msg = "Failed to update record."
+            else:
+                success = self.controller.db.add_patient(data)
+                msg = "Patient Record Added Successfully!"
+                err_msg = "Failed to add record."
+
             if success:
-                self._display_status("Patient Record Added Successfully!", "green")
-                ToastNotification(
-                    self.controller,
-                    "Patient Record Added Successfully!",
-                    toast_type="success",
-                )
+                self._display_status(msg, "green")
+                ToastNotification(self.controller, msg, toast_type="success")
                 self._clear_entries()
                 self.controller.refresh_dashboard_if_open()
                 return True
 
-            self._display_status("Failed to add record.", "red")
+            self._display_status(err_msg, "red")
             return False
+
 
         self._display_status("Database is unavailable.", "red")
         return False
@@ -198,7 +251,12 @@ class PatientEntryFrame(ctk.CTkFrame):
             else:
                 self._display_status("Saved DB, but PDF failed.", "red")
 
-    def _clear_entries(self) -> None:
+    def _clear_entries(self, keep_edit_id: bool = False) -> None:
+        if not keep_edit_id:
+            self.editing_patient_id = None
+            if hasattr(self, "edit_id_entry"):
+                self.edit_id_entry.delete(0, "end")
+
         for k, v in self.inputs.items():
             if isinstance(v, ctk.CTkComboBox):
                 v.set("Select Age" if k == "age" else "Select")
@@ -206,3 +264,4 @@ class PatientEntryFrame(ctk.CTkFrame):
                 v.delete("1.0", "end")
             else:
                 v.delete(0, "end")
+

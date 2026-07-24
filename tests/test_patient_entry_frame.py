@@ -85,8 +85,10 @@ def frame(controller: MagicMock, _mock_tk: dict) -> "PatientEntryFrame":
     f.inputs["address"] = _make_widget(_MockTextbox)
 
     f.status_label = MagicMock()
+    f.edit_id_entry = _make_widget(_MockEntry)
     f.after = MagicMock()
     return f
+
 
 
 def _set(frame, name: str, value: str) -> None:
@@ -214,10 +216,32 @@ class TestSaveAction:
             text_color="red",
         )
 
+    def test_load_patient_for_edit(self, frame) -> None:
+        mock_patient = MagicMock()
+        mock_patient.id = 5
+        mock_patient.first_name = "Jane"
+        mock_patient.last_name = "Smith"
+        mock_patient.age = 28
+        mock_patient.gender = "Female"
+        mock_patient.blood_group = "O+"
+        mock_patient.weight = 62.0
+        mock_patient.symptoms = "Fever"
+        mock_patient.address = "Main St"
+        mock_patient.pincode = "654321"
+        mock_patient.email = "jane@example.com"
+        mock_patient.mobile = "9876543210"
+
+        frame.controller.db.get_patient_by_id.return_value = mock_patient
+        frame.edit_id_entry.get = MagicMock(return_value="5")
+
+        frame._load_patient_for_edit()
+        assert frame.editing_patient_id == 5
+
     def test_handles_no_db_connection(self, frame) -> None:
         frame.controller.db.conn = None
         _set(frame, "first_name", "John")
         _set(frame, "last_name", "Doe")
+
         _set(frame, "age", "30")
         _set(frame, "mobile", "9876543210")
         _set(frame, "email", "john@test.com")
