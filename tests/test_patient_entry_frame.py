@@ -90,7 +90,6 @@ def frame(controller: MagicMock, _mock_tk: dict) -> "PatientEntryFrame":
     return f
 
 
-
 def _set(frame, name: str, value: str) -> None:
     frame.inputs[name].get.return_value = value
 

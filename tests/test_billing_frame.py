@@ -106,7 +106,9 @@ class TestBillingFrame:
         controller.db.get_bills.return_value = [
             (1, 10, "John Doe", None, 150.0, "Consultation", "Paid", "2026-07-24")
         ]
-        with patch("src.wellcare.frames.billing.generate_invoice_pdf", return_value="path/to/invoice.pdf") as mock_pdf:
+        with patch(
+            "src.wellcare.frames.billing.generate_invoice_pdf", return_value="path/to/invoice.pdf"
+        ) as mock_pdf:
             frame._print_invoice_pdf_action()
             mock_pdf.assert_called_once_with(
                 bill_id=1,
@@ -115,4 +117,3 @@ class TestBillingFrame:
                 description="Consultation",
                 status="Paid",
             )
-

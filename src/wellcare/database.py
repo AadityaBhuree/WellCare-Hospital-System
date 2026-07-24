@@ -631,9 +631,7 @@ class Database:
             logger.error("Error adding medical record for patient %s: %s", patient_id, err)
             return None
 
-    def get_patient_medical_history(
-        self, patient_id: int | None = None
-    ) -> list[tuple[Any, ...]]:
+    def get_patient_medical_history(self, patient_id: int | None = None) -> list[tuple[Any, ...]]:
         """Retrieve diagnostic medical timeline history for a patient or all patients."""
         if self.cur is None:
             return []

@@ -76,7 +76,6 @@ class SearchFrame(ctk.CTkFrame):
             width=100,
         ).pack(side="left", padx=5)
 
-
         # Admin: delete controls
         if self.controller.current_user_role == "admin":
             action_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -226,4 +225,3 @@ class SearchFrame(ctk.CTkFrame):
                 messagebox.showinfo("Export Successful", f"Exported to {out_path}")
             else:
                 ToastNotification(self.controller, "JSON export failed.", toast_type="error")
-

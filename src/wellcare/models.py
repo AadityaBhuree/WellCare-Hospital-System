@@ -87,7 +87,6 @@ class Patient:
         }
 
 
-
 @dataclass
 class Appointment:
     """Patient appointment entity."""
@@ -152,4 +151,3 @@ class MedicalRecord:
     treatment: str = ""
     notes: str = ""
     visit_date: datetime | str | None = None
-

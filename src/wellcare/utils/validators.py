@@ -4,7 +4,6 @@ import datetime
 import re
 
 
-
 def validate_mobile(mobile: str) -> str | None:
     """Validate mobile number. Returns error message or None."""
     if not mobile.isdigit() or len(mobile) < 10:
@@ -77,4 +76,3 @@ def validate_patient_input(
     if err:
         return err
     return None
-

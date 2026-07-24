@@ -130,7 +130,9 @@ def generate_invoice_pdf(
     # Details
     pdf.set_font("Arial", "B", 14)
     pdf.set_text_color(0, 0, 0)
-    pdf.cell(200, 10, text=f"Invoice #{bill_id}", new_x="LOWER", new_y="NEXT", align="L", border="B")
+    pdf.cell(
+        200, 10, text=f"Invoice #{bill_id}", new_x="LOWER", new_y="NEXT", align="L", border="B"
+    )
     pdf.ln(5)
 
     pdf.set_font("Arial", "", 12)
@@ -175,5 +177,3 @@ def generate_invoice_pdf(
     except Exception as e:
         logger.error("Invoice PDF generation failed: %s", e)
         return None
-
-

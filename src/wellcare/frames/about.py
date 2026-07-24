@@ -71,4 +71,3 @@ class AboutFrame(ctk.CTkFrame):
             fg_color="#1e85da",
             hover_color="#1565c0",
         ).grid(columnspan=2, row=3, column=0, pady=30)
-

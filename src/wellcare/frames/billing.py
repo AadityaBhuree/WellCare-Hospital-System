@@ -313,4 +313,3 @@ class BillingFrame(ctk.CTkFrame):
                 messagebox.showerror("Error", "Failed to generate PDF Invoice.")
         else:
             messagebox.showerror("Error", f"Invoice #{bid} not found in database.")
-

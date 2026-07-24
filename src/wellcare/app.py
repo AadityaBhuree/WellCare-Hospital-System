@@ -9,7 +9,6 @@ from tkinter import messagebox
 from typing import Any
 
 import customtkinter as ctk
-from PIL import Image
 from src.wellcare.config import (
     APP_GEOMETRY,
     APP_MIN_HEIGHT,
@@ -34,7 +33,6 @@ from src.wellcare.frames import (
 )
 from src.wellcare.logger import logger
 from src.wellcare.utils.image_loader import load_ctk_image
-
 
 
 class ClinicApp(ctk.CTk):
@@ -79,7 +77,6 @@ class ClinicApp(ctk.CTk):
                 text="",
             )
             self.logo_label.pack(side="left", padx=20, pady=10)
-
 
         self.title_label = ctk.CTkLabel(
             self.upper_frame,

@@ -23,7 +23,6 @@ class TestValidateDate:
         assert validate_date("") == "Date is required."
 
 
-
 class TestValidateMobile:
     """Tests for validate_mobile."""
 

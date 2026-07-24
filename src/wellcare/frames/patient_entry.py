@@ -224,7 +224,6 @@ class PatientEntryFrame(ctk.CTkFrame):
             self._display_status(err_msg, "red")
             return False
 
-
         self._display_status("Database is unavailable.", "red")
         return False
 
@@ -264,4 +263,3 @@ class PatientEntryFrame(ctk.CTkFrame):
                 v.delete("1.0", "end")
             else:
                 v.delete(0, "end")
-
