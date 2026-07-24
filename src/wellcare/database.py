@@ -22,6 +22,7 @@ class Database:
         self._cache = TTLCache(ttl_seconds=3.0)
         try:
             self.conn = sqlite3.connect(str(DATABASE_PATH), check_same_thread=False)
+            self.conn.execute("PRAGMA foreign_keys = ON")
             self.cur = self.conn.cursor()
             self._create_table()
         except Exception as err:
@@ -219,6 +220,38 @@ class Database:
             symptoms=row[11] or "",
         )
 
+    def get_all_patients(self) -> list[Patient]:
+        """Fetch all patient objects ordered by ID."""
+        if self.cur is None:
+            return []
+        self.cur.execute(
+            """
+            SELECT id, first_name, last_name, age, gender, blood_group,
+                   weight, mobile, email, address, pincode, symptoms, created_at
+            FROM patients ORDER BY id ASC
+        """
+        )
+        rows = self.cur.fetchall()
+        patients = []
+        for r in rows:
+            patients.append(
+                Patient(
+                    id=r[0],
+                    first_name=r[1] or "",
+                    last_name=r[2] or "",
+                    age=int(r[3]) if r[3] and str(r[3]).isdigit() else 0,
+                    gender=r[4] or "",
+                    blood_group=r[5] or "",
+                    weight=float(r[6]) if r[6] and str(r[6]).replace(".", "", 1).isdigit() else 0.0,
+                    mobile=r[7] or "",
+                    email=r[8] or "",
+                    address=r[9] or "",
+                    pincode=r[10] or "",
+                    symptoms=r[11] or "",
+                )
+            )
+        return patients
+
     def update_patient(self, patient_id: int | str, data: tuple[str, ...]) -> bool:
         """Update existing patient record fields."""
         if self.cur is None or self.conn is None:
@@ -258,6 +291,9 @@ class Database:
         if self.cur is None or self.conn is None:
             return False
         try:
+            self.cur.execute("DELETE FROM appointments WHERE patient_id = ?", (patient_id,))
+            self.cur.execute("DELETE FROM billing WHERE patient_id = ?", (patient_id,))
+            self.cur.execute("DELETE FROM medical_records WHERE patient_id = ?", (patient_id,))
             self.cur.execute("DELETE FROM patients WHERE id = ?", (patient_id,))
             self.conn.commit()
             self._cache.invalidate()
@@ -287,7 +323,8 @@ class Database:
             return stats
 
         self.cur.execute("SELECT COUNT(*) FROM patients")
-        stats["total"] = self.cur.fetchone()[0]
+        row = self.cur.fetchone()
+        stats["total"] = row[0] if row else 0
 
         self.cur.execute("SELECT gender, COUNT(*) FROM patients GROUP BY gender")
         stats["genders"] = self.cur.fetchall()
@@ -299,7 +336,8 @@ class Database:
         stats["ages"] = [row[0] for row in self.cur.fetchall()]
 
         self.cur.execute("SELECT COUNT(*) FROM patients WHERE date(created_at) = date('now')")
-        stats["today"] = self.cur.fetchone()[0]
+        row_today = self.cur.fetchone()
+        stats["today"] = row_today[0] if row_today else 0
 
         self.cur.execute("""
             SELECT date(created_at) as d, COUNT(*)

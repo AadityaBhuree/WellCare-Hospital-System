@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/ci.yml/badge.svg)](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/ci.yml)
 [![Build Executable](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/build.yml/badge.svg)](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/build.yml)
-[![Tests](https://img.shields.io/badge/tests-152%20passing-brightgreen?logo=pytest)](https://github.com/AadityaBhuree/WellCare-Hospital-System)
+[![Tests](https://img.shields.io/badge/tests-155%20passing-brightgreen?logo=pytest)](https://github.com/AadityaBhuree/WellCare-Hospital-System)
 [![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12%20|%203.13-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg?logo=ruff)](https://github.com/astral-sh/ruff)

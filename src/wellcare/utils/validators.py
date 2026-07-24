@@ -1,6 +1,8 @@
 """Input validation utilities for patient data entry."""
 
+import datetime
 import re
+
 
 
 def validate_mobile(mobile: str) -> str | None:
@@ -40,6 +42,17 @@ def validate_pincode(pincode: str) -> str | None:
     return None
 
 
+def validate_date(date_str: str) -> str | None:
+    """Validate date format (YYYY-MM-DD). Returns error message or None."""
+    if not date_str:
+        return "Date is required."
+    try:
+        datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        return None
+    except ValueError:
+        return "Invalid date format. Use YYYY-MM-DD."
+
+
 def validate_patient_input(
     mobile: str,
     email: str,
@@ -64,3 +77,4 @@ def validate_patient_input(
     if err:
         return err
     return None
+

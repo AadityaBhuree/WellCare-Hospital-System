@@ -7,6 +7,7 @@ from typing import Any
 import customtkinter as ctk
 from src.wellcare.models import Appointment, AppointmentStatus
 from src.wellcare.ui import Theme, ToastNotification
+from src.wellcare.utils.validators import validate_date
 
 
 class AppointmentsFrame(ctk.CTkFrame):
@@ -51,14 +52,21 @@ class AppointmentsFrame(ctk.CTkFrame):
         self.patient_id_entry.pack(fill="x", padx=15, pady=(0, 10))
 
         ctk.CTkLabel(form_card, text="Doctor:", font=Theme.FONT_BODY_BOLD).pack(anchor="w", padx=15)
-        self.doctor_combo = ctk.CTkComboBox(
-            form_card,
-            values=[
+        doc_values = []
+        if hasattr(self.controller, "db") and self.controller.db:
+            db_docs = self.controller.db.get_all_doctors(active_only=True)
+            for d in db_docs:
+                doc_values.append(f"{d[1]} ({d[2]})")
+        if not doc_values:
+            doc_values = [
                 "Dr. A. Sharma (Cardiology)",
                 "Dr. B. Verma (Neurology)",
                 "Dr. C. Gupta (Orthopedics)",
                 "Dr. D. Mehta (Gynecology)",
-            ],
+            ]
+        self.doctor_combo = ctk.CTkComboBox(
+            form_card,
+            values=doc_values,
             height=34,
         )
         self.doctor_combo.pack(fill="x", padx=15, pady=(0, 10))
@@ -182,6 +190,12 @@ class AppointmentsFrame(ctk.CTkFrame):
                 self.controller, "Please enter a valid numeric Patient ID.", toast_type="error"
             )
             messagebox.showerror("Error", "Please enter a valid numeric Patient ID.")
+            return
+
+        date_err = validate_date(date_str)
+        if date_err:
+            ToastNotification(self.controller, date_err, toast_type="error")
+            messagebox.showerror("Error", date_err)
             return
 
         patient = self.controller.db.get_patient_by_id(int(pid_str))

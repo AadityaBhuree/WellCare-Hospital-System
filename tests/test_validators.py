@@ -2,11 +2,26 @@
 
 from src.wellcare.utils.validators import (
     validate_age,
+    validate_date,
     validate_email,
     validate_mobile,
     validate_patient_input,
     validate_weight,
 )
+
+
+class TestValidateDate:
+    """Tests for validate_date."""
+
+    def test_valid_date(self) -> None:
+        assert validate_date("2026-07-24") is None
+
+    def test_invalid_date_format(self) -> None:
+        assert validate_date("24-07-2026") == "Invalid date format. Use YYYY-MM-DD."
+
+    def test_empty_date(self) -> None:
+        assert validate_date("") == "Date is required."
+
 
 
 class TestValidateMobile:

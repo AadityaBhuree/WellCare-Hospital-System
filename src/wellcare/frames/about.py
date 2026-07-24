@@ -7,6 +7,7 @@ import webbrowser
 
 import customtkinter as ctk
 from PIL import Image
+from src.wellcare import __version__
 from src.wellcare.config import ASSETS_DIR
 
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ class AboutFrame(ctk.CTkFrame):
             "comprehensive medical services with compassion and excellence.\n\n"
             "Our facility is equipped with state-of-the-art technology and staffed\n"
             "by highly trained professionals committed to the well-being of our community.\n\n"
-            "Version: 1.0.0 | Clinic Management System"
+            f"Version: {__version__} | Clinic Management System"
         )
 
         ctk.CTkLabel(
@@ -63,8 +64,11 @@ class AboutFrame(ctk.CTkFrame):
         ctk.CTkButton(
             self,
             text="Visit Website",
-            command=lambda: webbrowser.open("https://github.com/"),
+            command=lambda: webbrowser.open(
+                "https://github.com/AadityaBhuree/WellCare-Hospital-System"
+            ),
             font=("Roboto", 18, "bold"),
             fg_color="#1e85da",
             hover_color="#1565c0",
         ).grid(columnspan=2, row=3, column=0, pady=30)
+
