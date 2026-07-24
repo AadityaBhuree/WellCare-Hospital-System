@@ -139,3 +139,17 @@ class Bill:
             "status": self.status,
             "created_at": str(self.created_at) if self.created_at else "",
         }
+
+
+@dataclass
+class MedicalRecord:
+    """Patient medical consultation record entity."""
+
+    id: int | None = None
+    patient_id: int = 0
+    doctor_name: str = ""
+    diagnosis: str = ""
+    treatment: str = ""
+    notes: str = ""
+    visit_date: datetime | str | None = None
+

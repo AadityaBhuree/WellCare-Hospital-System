@@ -1,13 +1,14 @@
-"""
-PDF prescription generation for patient records.
-"""
-
 import datetime
+import re
 from pathlib import Path
 
 from fpdf import FPDF
 from src.wellcare.config import PRESCRIPTIONS_DIR
 from src.wellcare.logger import logger
+
+
+def _sanitize_name(name: str) -> str:
+    return re.sub(r"[^\w\-]", "_", name)
 
 
 def generate_prescription(
@@ -85,7 +86,9 @@ def generate_prescription(
     output_path.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.datetime.now().strftime("%H%M%S")
-    filename = output_path / f"{first_name}_{last_name}_{timestamp}.pdf"
+    safe_first = _sanitize_name(first_name)
+    safe_last = _sanitize_name(last_name)
+    filename = output_path / f"{safe_first}_{safe_last}_{timestamp}.pdf"
 
     try:
         pdf.output(str(filename))
@@ -94,3 +97,4 @@ def generate_prescription(
     except Exception as e:
         logger.error("PDF generation failed: %s", e)
         return None
+

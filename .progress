@@ -105,3 +105,15 @@ STATUS: ✅ COMPLETED
 - [x] Verify full test suite passes (155 tests passing)
 - [x] Commit and push to GitHub
 
+## PHASE 11: Security, Utilities & Export Integrations ✅
+STATUS: ✅ COMPLETED
+- [x] Add MedicalRecord dataclass model in models.py
+- [x] Implement name sanitization (_sanitize_name) in pdf.py to prevent filename/path injection
+- [x] Set absolute LOGS_DIR path using PROJECT_ROOT in logger.py
+- [x] Create database backup utility backup_database() in src/wellcare/utils/backup.py
+- [x] Add unit test suite for database backup utility in tests/test_backup.py
+- [x] Add CSV and JSON export action buttons & handlers to SearchFrame UI
+- [x] Verify full test suite passes (157 tests passing)
+- [x] Commit and push to GitHub
+
+

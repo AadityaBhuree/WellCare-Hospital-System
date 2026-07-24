@@ -5,7 +5,10 @@ import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-LOGS_DIR = Path("logs")
+from src.wellcare.config import PROJECT_ROOT
+
+LOGS_DIR = PROJECT_ROOT / "logs"
+
 
 
 def setup_logger(name: str = "wellcare") -> logging.Logger:

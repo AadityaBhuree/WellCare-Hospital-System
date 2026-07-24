@@ -1,10 +1,12 @@
 """Search screen for finding and managing patient records."""
 
+from pathlib import Path
 from tkinter import messagebox
 from typing import Any
 
 import customtkinter as ctk
 from src.wellcare.ui import Theme, ToastNotification
+from src.wellcare.utils.exporter import export_patients_to_csv, export_patients_to_json
 
 
 class SearchFrame(ctk.CTkFrame):
@@ -30,11 +32,11 @@ class SearchFrame(ctk.CTkFrame):
         self.search_entry = ctk.CTkEntry(
             search_frame,
             placeholder_text="Enter Patient Name",
-            width=300,
+            width=260,
             height=38,
             border_color=Theme.BORDER_LIGHT,
         )
-        self.search_entry.pack(side="left", padx=10)
+        self.search_entry.pack(side="left", padx=5)
 
         ctk.CTkButton(
             search_frame,
@@ -43,7 +45,8 @@ class SearchFrame(ctk.CTkFrame):
             fg_color=Theme.PRIMARY_ACCENT,
             hover_color=Theme.PRIMARY_LIGHT,
             height=38,
-        ).pack(side="left", padx=10)
+            width=90,
+        ).pack(side="left", padx=5)
 
         ctk.CTkButton(
             search_frame,
@@ -52,7 +55,27 @@ class SearchFrame(ctk.CTkFrame):
             fg_color=Theme.SUCCESS,
             hover_color=Theme.SUCCESS_HOVER,
             height=38,
-        ).pack(side="left", padx=10)
+            width=90,
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            search_frame,
+            text="Export CSV",
+            command=self._export_csv_action,
+            fg_color=Theme.INFO,
+            height=38,
+            width=100,
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            search_frame,
+            text="Export JSON",
+            command=self._export_json_action,
+            fg_color="#8e44ad",
+            height=38,
+            width=100,
+        ).pack(side="left", padx=5)
+
 
         # Admin: delete controls
         if self.controller.current_user_role == "admin":
@@ -165,3 +188,42 @@ class SearchFrame(ctk.CTkFrame):
                     toast_type="error",
                 )
                 messagebox.showerror("Error", "Failed to delete patient. Ensure ID exists.")
+
+    def _export_csv_action(self) -> None:
+        if self.controller.db.conn:
+            patients = self.controller.db.get_all_patients()
+            if not patients:
+                ToastNotification(
+                    self.controller, "No patient records to export.", toast_type="warning"
+                )
+                return
+            out_path = Path("Patient_Prescriptions") / "patients_export.csv"
+            if export_patients_to_csv(patients, out_path):
+                ToastNotification(
+                    self.controller,
+                    f"Exported {len(patients)} records to CSV!",
+                    toast_type="success",
+                )
+                messagebox.showinfo("Export Successful", f"Exported to {out_path}")
+            else:
+                ToastNotification(self.controller, "CSV export failed.", toast_type="error")
+
+    def _export_json_action(self) -> None:
+        if self.controller.db.conn:
+            patients = self.controller.db.get_all_patients()
+            if not patients:
+                ToastNotification(
+                    self.controller, "No patient records to export.", toast_type="warning"
+                )
+                return
+            out_path = Path("Patient_Prescriptions") / "patients_export.json"
+            if export_patients_to_json(patients, out_path):
+                ToastNotification(
+                    self.controller,
+                    f"Exported {len(patients)} records to JSON!",
+                    toast_type="success",
+                )
+                messagebox.showinfo("Export Successful", f"Exported to {out_path}")
+            else:
+                ToastNotification(self.controller, "JSON export failed.", toast_type="error")
+
