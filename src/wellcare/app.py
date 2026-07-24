@@ -28,6 +28,7 @@ from src.wellcare.frames import (
     DoctorsFrame,
     HomeFrame,
     LoginFrame,
+    MedicalRecordsFrame,
     PatientEntryFrame,
     SearchFrame,
 )
@@ -173,6 +174,12 @@ class ClinicApp(ctk.CTk):
             text="BILLING",
             **nav_args,
         )
+        self.medical_records_button = ctk.CTkButton(
+            self.button_frame,
+            command=lambda: self.show_frame_by_name("MedicalRecordsFrame"),
+            text="RECORDS",
+            **nav_args,
+        )
         self.logout_button = ctk.CTkButton(
             self.button_frame,
             command=self._logout_action,
@@ -213,8 +220,9 @@ class ClinicApp(ctk.CTk):
             self.appointments_button.grid(column=c_idx + 2, row=0, padx=15)
             self.doctors_button.grid(column=c_idx + 3, row=0, padx=15)
             self.billing_button.grid(column=c_idx + 4, row=0, padx=15)
-            self.about_button.grid(column=c_idx + 5, row=0, padx=15)
-            self.logout_button.grid(column=c_idx + 6, row=0, padx=15)
+            self.medical_records_button.grid(column=c_idx + 5, row=0, padx=15)
+            self.about_button.grid(column=c_idx + 6, row=0, padx=15)
+            self.logout_button.grid(column=c_idx + 7, row=0, padx=15)
         else:
             self.dashboard_button.grid_forget()
             self.new_patient_record_button.grid_forget()
@@ -222,6 +230,7 @@ class ClinicApp(ctk.CTk):
             self.appointments_button.grid_forget()
             self.doctors_button.grid_forget()
             self.billing_button.grid_forget()
+            self.medical_records_button.grid_forget()
             self.logout_button.grid_forget()
 
             self.about_button.grid(column=1, row=0, padx=15)
@@ -245,6 +254,7 @@ class ClinicApp(ctk.CTk):
             "AppointmentsFrame": AppointmentsFrame,
             "DoctorsFrame": DoctorsFrame,
             "BillingFrame": BillingFrame,
+            "MedicalRecordsFrame": MedicalRecordsFrame,
         }
 
         frame_class: Any = frame_map.get(frame_class_name)
@@ -260,6 +270,7 @@ class ClinicApp(ctk.CTk):
             AppointmentsFrame,
             DoctorsFrame,
             BillingFrame,
+            MedicalRecordsFrame,
         ):
             messagebox.showwarning("Access Denied", "Please login first.")
             return self.show_frame_by_name("LoginFrame")

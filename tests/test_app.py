@@ -68,6 +68,7 @@ def app() -> "ClinicApp":
     app.appointments_button = _make_mock_widget()
     app.doctors_button = _make_mock_widget()
     app.billing_button = _make_mock_widget()
+    app.medical_records_button = _make_mock_widget()
     app.logout_button = _make_mock_widget()
     app.mode_switch = _make_mock_widget()
     app.mode_switch.get.return_value = False
@@ -249,6 +250,7 @@ class TestUpdateNavButtons:
         app.appointments_button.grid_forget.assert_called()
         app.doctors_button.grid_forget.assert_called()
         app.billing_button.grid_forget.assert_called()
+        app.medical_records_button.grid_forget.assert_called()
         app.logout_button.grid_forget.assert_called()
         app.about_button.grid.assert_called_with(column=1, row=0, padx=15)
         app.login_screen_button.grid.assert_called_with(column=2, row=0, padx=15)
@@ -265,8 +267,9 @@ class TestUpdateNavButtons:
         app.appointments_button.grid.assert_called_with(column=4, row=0, padx=15)
         app.doctors_button.grid.assert_called_with(column=5, row=0, padx=15)
         app.billing_button.grid.assert_called_with(column=6, row=0, padx=15)
-        app.about_button.grid.assert_called_with(column=7, row=0, padx=15)
-        app.logout_button.grid.assert_called_with(column=8, row=0, padx=15)
+        app.medical_records_button.grid.assert_called_with(column=7, row=0, padx=15)
+        app.about_button.grid.assert_called_with(column=8, row=0, padx=15)
+        app.logout_button.grid.assert_called_with(column=9, row=0, padx=15)
 
     def test_logged_in_as_staff_hides_dashboard(self, app) -> None:
         app.is_logged_in = True
@@ -279,8 +282,9 @@ class TestUpdateNavButtons:
         app.appointments_button.grid.assert_called_with(column=3, row=0, padx=15)
         app.doctors_button.grid.assert_called_with(column=4, row=0, padx=15)
         app.billing_button.grid.assert_called_with(column=5, row=0, padx=15)
-        app.about_button.grid.assert_called_with(column=6, row=0, padx=15)
-        app.logout_button.grid.assert_called_with(column=7, row=0, padx=15)
+        app.medical_records_button.grid.assert_called_with(column=6, row=0, padx=15)
+        app.about_button.grid.assert_called_with(column=7, row=0, padx=15)
+        app.logout_button.grid.assert_called_with(column=8, row=0, padx=15)
 
 
 class TestLogoutAction:

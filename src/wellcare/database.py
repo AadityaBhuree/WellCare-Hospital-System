@@ -112,6 +112,20 @@ class Database:
             );
         """)
 
+        # Medical records table
+        self.cur.execute("""
+            CREATE TABLE IF NOT EXISTS medical_records (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                patient_id INTEGER,
+                doctor_name TEXT,
+                diagnosis TEXT,
+                treatment TEXT,
+                notes TEXT,
+                visit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(patient_id) REFERENCES patients(id)
+            );
+        """)
+
         # Audit log table
         self.cur.execute("""
             CREATE TABLE IF NOT EXISTS audit_log (
@@ -133,6 +147,9 @@ class Database:
         )
         self.cur.execute(
             "CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status);"
+        )
+        self.cur.execute(
+            "CREATE INDEX IF NOT EXISTS idx_medical_records_patient ON medical_records(patient_id);"
         )
 
         if self.conn:
@@ -546,3 +563,52 @@ class Database:
             "paid_count": paid_cnt,
             "pending_count": pending_cnt,
         }
+
+    # ── Medical Records Operations ──────────────────────────────────────
+
+    def add_medical_record(
+        self,
+        patient_id: int,
+        doctor_name: str,
+        diagnosis: str,
+        treatment: str,
+        notes: str = "",
+    ) -> int | None:
+        """Create a new medical history record for a patient."""
+        if self.cur is None or self.conn is None:
+            return None
+        try:
+            self.cur.execute(
+                """
+                INSERT INTO medical_records (patient_id, doctor_name, diagnosis, treatment, notes)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (patient_id, doctor_name, diagnosis, treatment, notes),
+            )
+            self.conn.commit()
+            record_id = self.cur.lastrowid
+            logger.info("Added medical record #%s for patient #%s", record_id, patient_id)
+            return record_id
+        except Exception as err:
+            logger.error("Error adding medical record for patient %s: %s", patient_id, err)
+            return None
+
+    def get_patient_medical_history(
+        self, patient_id: int | None = None
+    ) -> list[tuple[Any, ...]]:
+        """Retrieve diagnostic medical timeline history for a patient or all patients."""
+        if self.cur is None:
+            return []
+        query = """
+            SELECT m.id, m.patient_id, (p.first_name || ' ' || p.last_name) as patient_name,
+                   m.doctor_name, m.diagnosis, m.treatment, m.notes, m.visit_date
+            FROM medical_records m
+            LEFT JOIN patients p ON m.patient_id = p.id
+        """
+        params: list[Any] = []
+        if patient_id is not None:
+            query += " WHERE m.patient_id = ?"
+            params.append(patient_id)
+        query += " ORDER BY m.id DESC"
+        self.cur.execute(query, params)
+        return self.cur.fetchall()
