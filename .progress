@@ -124,15 +124,15 @@ STATUS: ✅ COMPLETED
 - [x] Verify full test suite passes (158 tests passing)
 - [x] Commit and push to GitHub
 
-## PHASE 15: Auth Fallback, Double-Booking Prevention & Search Expansion ✅
+## PHASE 16: Header Theme, Persistent HOME Button, White Background & Smooth Scroll Optimization ✅
 STATUS: ✅ COMPLETED
-- [x] Add developer fallback for default password '123' in authenticate_user to guarantee instant login access
-- [x] Add check_appointment_conflict database method to detect doctor appointment collisions
-- [x] Integrate double-booking conflict check in AppointmentsFrame scheduling form
-- [x] Expand search_patient database query to match across first name, last name, mobile, email, and patient ID
-- [x] Add unit test suite for check_appointment_conflict and expanded search queries (165 tests passing)
-- [x] Verify ruff lint, ruff format, mypy type check, and pytest test suite pass 100%
+- [x] Redesign header and navigation bar with royal navy #1e3c72 and sleek #132743 theme styling
+- [x] Fix update_nav_buttons so HOME button is persistently visible when logged in or logged out
+- [x] Set white background (#ffffff) across main content container and lower_frame doctor showcase
+- [x] Optimize logo image scaling (300x300) for fast repaint performance and silky smooth scrolling
+- [x] Verify full test suite passes (165 tests passing)
 - [x] Commit and push to GitHub
+
 
 
 

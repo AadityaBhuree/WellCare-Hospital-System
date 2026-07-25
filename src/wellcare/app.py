@@ -65,11 +65,12 @@ class ClinicApp(ctk.CTk):
 
     def _build_ui(self) -> None:
         # ── Header Frame ─────────────────────────────────────
-        self.upper_frame = ctk.CTkFrame(self, fg_color="#1a252f", height=100, corner_radius=0)
+        # ── Header Frame ─────────────────────────────────────
+        self.upper_frame = ctk.CTkFrame(self, fg_color="#1e3c72", height=95, corner_radius=0)
         self.upper_frame.pack(side="top", fill="x")
         self.upper_frame.pack_propagate(False)
 
-        logo_image = load_ctk_image(ASSETS_DIR / "wellcare.png", size=(80, 80))
+        logo_image = load_ctk_image(ASSETS_DIR / "wellcare.png", size=(75, 75))
         if logo_image:
             self.logo_label = ctk.CTkLabel(
                 self.upper_frame,
@@ -81,7 +82,7 @@ class ClinicApp(ctk.CTk):
         self.title_label = ctk.CTkLabel(
             self.upper_frame,
             text="WellCare Hospital Management System",
-            font=("Roboto", 24, "bold"),
+            font=("Segoe UI", 24, "bold"),
             text_color="white",
         )
         self.title_label.pack(side="left", padx=10, pady=10)
@@ -89,14 +90,14 @@ class ClinicApp(ctk.CTk):
         self.date_label = ctk.CTkLabel(
             self.upper_frame,
             text="",
-            font=("Roboto", 14),
-            text_color="white",
+            font=("Segoe UI", 13, "bold"),
+            text_color="#e0e8f5",
         )
-        self.date_label.pack(side="right", padx=20, pady=10)
+        self.date_label.pack(side="right", padx=25, pady=10)
         self._update_time()
 
         # ── Navigation Frame ─────────────────────────────────
-        self.button_frame = ctk.CTkFrame(self, fg_color="#2c3e50", height=50, corner_radius=0)
+        self.button_frame = ctk.CTkFrame(self, fg_color="#132743", height=50, corner_radius=0)
         self.button_frame.pack(side="top", fill="x")
 
         # Dark Mode Switcher
@@ -105,15 +106,16 @@ class ClinicApp(ctk.CTk):
             text="Dark Mode",
             command=self._toggle_mode,
             text_color="white",
-            font=("Roboto", 12),
+            font=("Segoe UI", 12, "bold"),
+            progress_color="#1e85da",
         )
         self.mode_switch.grid(column=0, row=0, padx=15, pady=10)
 
         nav_args = {
-            "font": ("Roboto", 14, "bold"),
+            "font": ("Segoe UI", 13, "bold"),
             "fg_color": "transparent",
             "text_color": "white",
-            "hover_color": "#34495e",
+            "hover_color": "#1e85da",
             "cursor": "hand2",
         }
 
@@ -182,14 +184,18 @@ class ClinicApp(ctk.CTk):
             command=self._logout_action,
             text="LOGOUT",
             fg_color="#e25353",
-            font=("Roboto", 15, "bold"),
+            font=("Segoe UI", 13, "bold"),
             hover_color="#c44545",
             cursor="hand2",
         )
 
         # ── Content Area ──────────────────────────────────────
-        self.main_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
-        self.main_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        self.main_frame = ctk.CTkScrollableFrame(
+            self,
+            fg_color=("#ffffff", "#1b263b"),
+            corner_radius=0,
+        )
+        self.main_frame.pack(fill="both", expand=True, padx=0, pady=0)
 
     def _update_time(self) -> None:
         self.date_label.configure(
@@ -204,24 +210,27 @@ class ClinicApp(ctk.CTk):
 
     def update_nav_buttons(self) -> None:
         """Show or hide top navigation menu options based on auth state and user role."""
+        # Always display HOME button at column 1
+        self.home_screen_button.grid(column=1, row=0, padx=10)
+
         if self.is_logged_in:
             self.login_screen_button.grid_forget()
-            c_idx = 1
+            c_idx = 2
 
             if self.current_user_role == "admin":
-                self.dashboard_button.grid(column=c_idx, row=0, padx=15)
+                self.dashboard_button.grid(column=c_idx, row=0, padx=10)
                 c_idx += 1
             else:
                 self.dashboard_button.grid_forget()
 
-            self.new_patient_record_button.grid(column=c_idx, row=0, padx=15)
-            self.search_button.grid(column=c_idx + 1, row=0, padx=15)
-            self.appointments_button.grid(column=c_idx + 2, row=0, padx=15)
-            self.doctors_button.grid(column=c_idx + 3, row=0, padx=15)
-            self.billing_button.grid(column=c_idx + 4, row=0, padx=15)
-            self.medical_records_button.grid(column=c_idx + 5, row=0, padx=15)
-            self.about_button.grid(column=c_idx + 6, row=0, padx=15)
-            self.logout_button.grid(column=c_idx + 7, row=0, padx=15)
+            self.new_patient_record_button.grid(column=c_idx, row=0, padx=10)
+            self.search_button.grid(column=c_idx + 1, row=0, padx=10)
+            self.appointments_button.grid(column=c_idx + 2, row=0, padx=10)
+            self.doctors_button.grid(column=c_idx + 3, row=0, padx=10)
+            self.billing_button.grid(column=c_idx + 4, row=0, padx=10)
+            self.medical_records_button.grid(column=c_idx + 5, row=0, padx=10)
+            self.about_button.grid(column=c_idx + 6, row=0, padx=10)
+            self.logout_button.grid(column=c_idx + 7, row=0, padx=10)
         else:
             self.dashboard_button.grid_forget()
             self.new_patient_record_button.grid_forget()
@@ -232,8 +241,8 @@ class ClinicApp(ctk.CTk):
             self.medical_records_button.grid_forget()
             self.logout_button.grid_forget()
 
-            self.about_button.grid(column=1, row=0, padx=15)
-            self.login_screen_button.grid(column=2, row=0, padx=15)
+            self.about_button.grid(column=2, row=0, padx=10)
+            self.login_screen_button.grid(column=3, row=0, padx=10)
 
     def _toggle_mode(self) -> None:
         mode = "Dark" if self.mode_switch.get() else "Light"
