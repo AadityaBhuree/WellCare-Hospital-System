@@ -97,7 +97,7 @@ class ClinicApp(ctk.CTk):
         self._update_time()
 
         # ── Navigation Frame ─────────────────────────────────
-        self.button_frame = ctk.CTkFrame(self, fg_color="#132743", height=50, corner_radius=0)
+        self.button_frame = ctk.CTkFrame(self, fg_color="#2a5298", height=50, corner_radius=0)
         self.button_frame.pack(side="top", fill="x")
 
         # Dark Mode Switcher
@@ -107,7 +107,7 @@ class ClinicApp(ctk.CTk):
             command=self._toggle_mode,
             text_color="white",
             font=("Segoe UI", 12, "bold"),
-            progress_color="#1e85da",
+            progress_color="#1e3c72",
         )
         self.mode_switch.grid(column=0, row=0, padx=15, pady=10)
 
@@ -298,7 +298,7 @@ class ClinicApp(ctk.CTk):
         }
         for f_name, btn in nav_button_map.items():
             if f_name == frame_class_name:
-                btn.configure(fg_color="#1e85da")
+                btn.configure(fg_color="#1e3c72")
             else:
                 btn.configure(fg_color="transparent")
 
