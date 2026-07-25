@@ -220,11 +220,14 @@ class DashboardFrame(ctk.CTkFrame):
             except (ValueError, TypeError):
                 pass
         if any(age_groups.values()):
+            age_keys = list(age_groups.keys())
             sns.barplot(
-                x=list(age_groups.keys()),
+                x=age_keys,
                 y=list(age_groups.values()),
                 ax=ax2,
+                hue=age_keys,
                 palette="viridis",
+                legend=False,
             )
             ax2.set_title("Age Categories")
             ax2.set_ylabel("Count")
@@ -236,7 +239,7 @@ class DashboardFrame(ctk.CTkFrame):
         labels2 = [item[0] for item in valid_bloods]
         values2 = [item[1] for item in valid_bloods]
         if values2:
-            sns.barplot(x=labels2, y=values2, ax=ax1, palette="magma")
+            sns.barplot(x=labels2, y=values2, ax=ax1, hue=labels2, palette="magma", legend=False)
             ax1.set_title("Blood Group Distribution")
             ax1.set_ylabel("Count")
 
@@ -244,17 +247,20 @@ class DashboardFrame(ctk.CTkFrame):
         if appt_counts:
             statuses = [a[0] for a in appt_counts]
             counts = [a[1] for a in appt_counts]
-            sns.barplot(x=statuses, y=counts, ax=ax2, palette="crest")
+            sns.barplot(x=statuses, y=counts, ax=ax2, hue=statuses, palette="crest", legend=False)
             ax2.set_title("Appointment Status Breakdown")
             ax2.set_ylabel("Count")
         else:
             top_symp = self.controller.db.get_symptom_frequencies(5)
             if top_symp:
+                symp_labels = [x[0].capitalize() for x in top_symp]
                 sns.barplot(
-                    x=[x[0].capitalize() for x in top_symp],
+                    x=symp_labels,
                     y=[x[1] for x in top_symp],
                     ax=ax2,
+                    hue=symp_labels,
                     palette="rocket",
+                    legend=False,
                 )
                 ax2.set_title("Top 5 Symptom Keywords")
                 ax2.set_ylabel("Frequency")
