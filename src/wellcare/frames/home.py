@@ -73,7 +73,7 @@ class HomeFrame(ctk.CTkFrame):
 
     def _build_ui(self) -> None:
         # ── Logo ───────────────────────────────────────────────
-        logo_img = load_ctk_image(ASSETS_DIR / "wellcare.png", size=(300, 300))
+        logo_img = load_ctk_image(ASSETS_DIR / "wellcare.png", size=(650, 650))
         if logo_img:
             logo_label = ctk.CTkLabel(self, text="", image=logo_img)
             logo_label.grid(row=1, column=0, columnspan=2, pady=(10, 0))
