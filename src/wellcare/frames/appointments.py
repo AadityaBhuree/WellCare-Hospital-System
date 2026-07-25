@@ -206,6 +206,13 @@ class AppointmentsFrame(ctk.CTkFrame):
             messagebox.showerror("Error", f"Patient ID {pid_str} not found.")
             return
 
+        if self.controller.db.check_appointment_conflict(doc, date_str, slot):
+            doc_name = doc.split("(")[0].strip()
+            msg = f"{doc_name} already has an appointment booked for {slot} on {date_str}."
+            ToastNotification(self.controller, msg, toast_type="error")
+            messagebox.showerror("Booking Conflict", msg)
+            return
+
         dept = doc.split("(")[1].replace(")", "") if "(" in doc else "General"
         appt = Appointment(
             patient_id=int(pid_str),

@@ -260,3 +260,38 @@ class TestDatabase:
     def test_get_appointment_status_counts(self, db: Database) -> None:
         counts = db.get_appointment_status_counts()
         assert isinstance(counts, list)
+
+    def test_search_patient_by_mobile_and_email(self, db: Database) -> None:
+        data = (
+            "Alice",
+            "Wonderland",
+            "28",
+            "Female",
+            "O+",
+            "55",
+            "9876543219",
+            "alice@wonderland.com",
+            "789 Path",
+            "111222",
+            "Flu",
+        )
+        assert db.add_patient(data) is True
+        res_mobile = db.search_patient("9876543219")
+        assert len(res_mobile) == 1
+        res_email = db.search_patient("alice@wonderland.com")
+        assert len(res_email) == 1
+
+    def test_check_appointment_conflict(self, db: Database) -> None:
+        from src.wellcare.models import Appointment, AppointmentStatus
+
+        appt = Appointment(
+            patient_id=1,
+            doctor_name="Dr. Unique",
+            department="Cardiology",
+            date="2026-08-01",
+            time_slot="11:00 AM",
+            status=AppointmentStatus.SCHEDULED.value,
+        )
+        assert db.add_appointment(appt) is True
+        assert db.check_appointment_conflict("Dr. Unique", "2026-08-01", "11:00 AM") is True
+        assert db.check_appointment_conflict("Dr. Unique", "2026-08-01", "02:00 PM") is False

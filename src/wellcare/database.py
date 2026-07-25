@@ -283,7 +283,7 @@ class Database:
             return False
 
     def search_patient(self, keyword: str) -> list[tuple[Any, ...]]:
-        """Search patients by first or last name using fuzzy match."""
+        """Search patients by first/last name, mobile, email, or patient ID."""
         if self.cur is None or not keyword.strip():
             return []
         safe_keyword = keyword.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -291,9 +291,19 @@ class Database:
             """
             SELECT id, first_name, last_name, age, mobile, symptoms
             FROM patients
-            WHERE first_name LIKE ? ESCAPE '\\' OR last_name LIKE ? ESCAPE '\\'
+            WHERE first_name LIKE ? ESCAPE '\\'
+               OR last_name LIKE ? ESCAPE '\\'
+               OR mobile LIKE ? ESCAPE '\\'
+               OR email LIKE ? ESCAPE '\\'
+               OR CAST(id AS TEXT) = ?
         """,
-            (f"%{safe_keyword}%", f"%{safe_keyword}%"),
+            (
+                f"%{safe_keyword}%",
+                f"%{safe_keyword}%",
+                f"%{safe_keyword}%",
+                f"%{safe_keyword}%",
+                safe_keyword,
+            ),
         )
         return self.cur.fetchall()
 
@@ -464,6 +474,21 @@ class Database:
         except Exception as e:
             logger.error("Failed to update appointment %s status: %s", appt_id, e)
             return False
+
+    def check_appointment_conflict(self, doctor_name: str, date: str, time_slot: str) -> bool:
+        """Check if doctor already has an active appointment for the given date and time slot."""
+        if self.cur is None:
+            return False
+        doc_clean = doctor_name.split("(")[0].strip()
+        self.cur.execute(
+            """
+            SELECT COUNT(*) FROM appointments
+            WHERE doctor_name LIKE ? AND date = ? AND time_slot = ? AND status != 'Cancelled'
+            """,
+            (f"%{doc_clean}%", date, time_slot),
+        )
+        row = self.cur.fetchone()
+        return (row[0] > 0) if row else False
 
     def get_appointment_status_counts(self) -> list[tuple[str, int]]:
         """Get counts of appointments grouped by status."""
