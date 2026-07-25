@@ -73,7 +73,7 @@ class DashboardFrame(ctk.CTkFrame):
             padx=20,
             sticky="ew",
         )
-        self.kpi_frame.grid_columnconfigure((0, 1), weight=1)
+        self.kpi_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         ctk.CTkLabel(
             self,
@@ -107,7 +107,7 @@ class DashboardFrame(ctk.CTkFrame):
             accent_color=Theme.PRIMARY_ACCENT,
             subtitle="All-time patient database",
         )
-        card_total.grid(row=0, column=0, padx=10, pady=5, sticky="ew")
+        card_total.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
         animate_count_up(card_total.value_label, target_val=int(stats.get("total", 0)))
 
         card_today = KPICard(
@@ -118,8 +118,33 @@ class DashboardFrame(ctk.CTkFrame):
             accent_color=Theme.WARNING,
             subtitle="Registered in last 24 hours",
         )
-        card_today.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
+        card_today.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         animate_count_up(card_today.value_label, target_val=int(stats.get("today", 0)))
+
+        active_doctors = len(self.controller.db.get_all_doctors(active_only=True))
+        card_doctors = KPICard(
+            self.kpi_frame,
+            title="Active Doctors",
+            value="0",
+            icon="👨‍⚕️",
+            accent_color=Theme.SUCCESS,
+            subtitle="Staff on active roster",
+        )
+        card_doctors.grid(row=0, column=2, padx=5, pady=5, sticky="ew")
+        animate_count_up(card_doctors.value_label, target_val=active_doctors)
+
+        billing_stats = self.controller.db.get_billing_stats()
+        unpaid_count = int(billing_stats.get("pending_count", 0))
+        card_unpaid = KPICard(
+            self.kpi_frame,
+            title="Unpaid Invoices",
+            value="0",
+            icon="⚠️",
+            accent_color=Theme.DANGER,
+            subtitle="Pending financial invoices",
+        )
+        card_unpaid.grid(row=0, column=3, padx=5, pady=5, sticky="ew")
+        animate_count_up(card_unpaid.value_label, target_val=unpaid_count)
 
     def _render_charts(self, _choice: str | None = None) -> None:
         if self.controller.current_user_role != "admin":
@@ -210,19 +235,27 @@ class DashboardFrame(ctk.CTkFrame):
             ax1.set_title("Blood Group Distribution")
             ax1.set_ylabel("Count")
 
-        top_symp = self.controller.db.get_symptom_frequencies(5)
-        if top_symp:
-            sns.barplot(
-                x=[x[0].capitalize() for x in top_symp],
-                y=[x[1] for x in top_symp],
-                ax=ax2,
-                palette="rocket",
-            )
-            ax2.set_title("Top 5 Symptom Keywords")
-            ax2.set_ylabel("Frequency")
+        appt_counts = self.controller.db.get_appointment_status_counts()
+        if appt_counts:
+            statuses = [a[0] for a in appt_counts]
+            counts = [a[1] for a in appt_counts]
+            sns.barplot(x=statuses, y=counts, ax=ax2, palette="crest")
+            ax2.set_title("Appointment Status Breakdown")
+            ax2.set_ylabel("Count")
         else:
-            ax2.text(0.5, 0.5, "No Symptom Data", ha="center", va="center", fontsize=12)
-            ax2.set_axis_off()
+            top_symp = self.controller.db.get_symptom_frequencies(5)
+            if top_symp:
+                sns.barplot(
+                    x=[x[0].capitalize() for x in top_symp],
+                    y=[x[1] for x in top_symp],
+                    ax=ax2,
+                    palette="rocket",
+                )
+                ax2.set_title("Top 5 Symptom Keywords")
+                ax2.set_ylabel("Frequency")
+            else:
+                ax2.text(0.5, 0.5, "No Appointment Data", ha="center", va="center", fontsize=12)
+                ax2.set_axis_off()
 
     def _render_trend_view(self, stats: dict[str, Any], ax1: Any, ax2: Any) -> None:
         if stats["trends"]:

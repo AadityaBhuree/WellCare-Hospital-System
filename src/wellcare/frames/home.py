@@ -134,7 +134,7 @@ class HomeFrame(ctk.CTkFrame):
 
         self.services_frame = ctk.CTkFrame(
             self,
-            fg_color="#ffffff",
+            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color="#acb0b3",

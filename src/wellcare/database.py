@@ -445,6 +445,13 @@ class Database:
             logger.error("Failed to update appointment %s status: %s", appt_id, e)
             return False
 
+    def get_appointment_status_counts(self) -> list[tuple[str, int]]:
+        """Get counts of appointments grouped by status."""
+        if self.cur is None:
+            return []
+        self.cur.execute("SELECT status, COUNT(*) FROM appointments GROUP BY status")
+        return self.cur.fetchall()
+
     def add_doctor(
         self,
         name: str,

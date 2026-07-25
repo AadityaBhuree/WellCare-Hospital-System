@@ -76,7 +76,7 @@ class BillingFrame(ctk.CTkFrame):
         # Left Column: Add Invoice Form Card
         form_card = ctk.CTkFrame(
             self,
-            fg_color="#ffffff",
+            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,
@@ -133,7 +133,7 @@ class BillingFrame(ctk.CTkFrame):
         # Right Column: Invoice History List
         list_card = ctk.CTkFrame(
             self,
-            fg_color="#ffffff",
+            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,

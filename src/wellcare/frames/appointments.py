@@ -31,7 +31,7 @@ class AppointmentsFrame(ctk.CTkFrame):
         # Left Column: New Appointment Form Card
         form_card = ctk.CTkFrame(
             self,
-            fg_color="#ffffff",
+            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,
@@ -117,7 +117,7 @@ class AppointmentsFrame(ctk.CTkFrame):
         # Right Column: Appointments List
         list_card = ctk.CTkFrame(
             self,
-            fg_color="#ffffff",
+            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,
