@@ -50,7 +50,7 @@ class DashboardFrame(ctk.CTkFrame):
         view_menu = ctk.CTkOptionMenu(
             header_frame,
             variable=self.chart_view_var,
-            values=["Demographics View", "Medical View", "Trend & History View"],
+            values=["Demographics View", "Medical View", "Trend & History View", "Audit Logs View"],
             command=self._render_charts,
         )
         view_menu.grid(row=0, column=2, sticky="e", padx=(20, 100))
@@ -169,6 +169,10 @@ class DashboardFrame(ctk.CTkFrame):
         plt.rcParams.update({"text.color": text_col, "axes.labelcolor": text_col})
 
         current_view = self.chart_view_var.get()
+        if current_view == "Audit Logs View":
+            self._render_audit_logs_view()
+            return
+
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4), facecolor=bg_col)
         fig.tight_layout(pad=3.0)
 
@@ -192,6 +196,40 @@ class DashboardFrame(ctk.CTkFrame):
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True)
         plt.close(fig)
+
+    def _render_audit_logs_view(self) -> None:
+        """Render recent security and activity audit logs table."""
+        logs = self.controller.db.get_recent_audit_logs(limit=50)
+
+        box = ctk.CTkTextbox(
+            self.chart_container,
+            height=300,
+            font=("Consolas", 12),
+        )
+        box.pack(fill="both", expand=True, padx=10, pady=10)
+
+        hdr = (
+            f"{'ID':<6} | {'TIMESTAMP':<19} | {'USER':<10} | "
+            f"{'ROLE':<6} | {'ACTION':<22} | DETAILS\n"
+        )
+        box.insert("end", hdr)
+        box.insert("end", "-" * 110 + "\n")
+
+        if not logs:
+            box.insert("end", "No audit log entries recorded yet.\n")
+        else:
+            for log in logs:
+                line = (
+                    f"{log['id']:<6} | "
+                    f"{log.get('timestamp', '')!s:<20} | "
+                    f"{log.get('username', '')!s:<12} | "
+                    f"{log.get('user_role', '')!s:<8} | "
+                    f"{log.get('action', '')!s:<25} | "
+                    f"{log.get('details', '')!s}\n"
+                )
+                box.insert("end", line)
+
+        box.configure(state="disabled")
 
     def _render_demographics_view(self, stats: dict[str, Any], ax1: Any, ax2: Any) -> None:
         valid_genders = [
