@@ -219,7 +219,6 @@ class BillingFrame(ctk.CTkFrame):
                     f"{bid:<5} | {pname_str[:18]:<18} | ${amount:<9.2f} | {status:<10} | {desc}\n"
                 )
                 self.list_box.insert("end", line)
-                self.list_box.insert("end", line)
         else:
             self.list_box.insert("end", "No billing records found.")
 

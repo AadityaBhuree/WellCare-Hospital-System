@@ -5,6 +5,7 @@ from tkinter import messagebox
 from typing import Any
 
 import customtkinter as ctk
+from src.wellcare.config import PRESCRIPTIONS_DIR
 from src.wellcare.ui import Theme, ToastNotification
 from src.wellcare.utils.exporter import export_patients_to_csv, export_patients_to_json
 
@@ -178,7 +179,11 @@ class SearchFrame(ctk.CTkFrame):
                     toast_type="success",
                 )
                 messagebox.showinfo("Success", f"Patient ID {pid} deleted.")
-                self._search_action()
+                self.delete_id_entry.delete(0, "end")
+                if self.search_entry.get().strip():
+                    self._search_action()
+                else:
+                    self._search_action(show_all=True)
                 self.controller.refresh_dashboard_if_open()
             else:
                 ToastNotification(
@@ -196,7 +201,7 @@ class SearchFrame(ctk.CTkFrame):
                     self.controller, "No patient records to export.", toast_type="warning"
                 )
                 return
-            out_path = Path("Patient_Prescriptions") / "patients_export.csv"
+            out_path = PRESCRIPTIONS_DIR / "patients_export.csv"
             if export_patients_to_csv(patients, out_path):
                 ToastNotification(
                     self.controller,
@@ -215,7 +220,7 @@ class SearchFrame(ctk.CTkFrame):
                     self.controller, "No patient records to export.", toast_type="warning"
                 )
                 return
-            out_path = Path("Patient_Prescriptions") / "patients_export.json"
+            out_path = PRESCRIPTIONS_DIR / "patients_export.json"
             if export_patients_to_json(patients, out_path):
                 ToastNotification(
                     self.controller,

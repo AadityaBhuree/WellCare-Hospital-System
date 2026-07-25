@@ -4,6 +4,7 @@ Uses SQLite for efficient, lightweight local data storage with caching and audit
 """
 
 import sqlite3
+import threading
 from collections import Counter
 from typing import Any, cast
 
@@ -17,6 +18,7 @@ class Database:
     """Handles all persistent data operations with connection management and caching."""
 
     def __init__(self) -> None:
+        self._lock = threading.Lock()
         self.conn: sqlite3.Connection | None = None
         self.cur: sqlite3.Cursor | None = None
         self._cache = TTLCache(ttl_seconds=3.0)
@@ -82,7 +84,7 @@ class Database:
                 status TEXT DEFAULT 'Scheduled',
                 notes TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(patient_id) REFERENCES patients(id)
+                FOREIGN KEY(patient_id) REFERENCES patients(id) ON DELETE CASCADE
             );
         """)
 
@@ -109,7 +111,7 @@ class Database:
                 description TEXT,
                 status TEXT DEFAULT 'Pending',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(patient_id) REFERENCES patients(id)
+                FOREIGN KEY(patient_id) REFERENCES patients(id) ON DELETE CASCADE
             );
         """)
 
@@ -123,7 +125,7 @@ class Database:
                 treatment TEXT,
                 notes TEXT,
                 visit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(patient_id) REFERENCES patients(id)
+                FOREIGN KEY(patient_id) REFERENCES patients(id) ON DELETE CASCADE
             );
         """)
 
@@ -276,9 +278,9 @@ class Database:
 
     def search_patient(self, keyword: str) -> list[tuple[Any, ...]]:
         """Search patients by first or last name using fuzzy match."""
-        if self.cur is None:
+        if self.cur is None or not keyword.strip():
             return []
-        safe_keyword = keyword.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        safe_keyword = keyword.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         self.cur.execute(
             """
             SELECT id, first_name, last_name, age, mobile, symptoms

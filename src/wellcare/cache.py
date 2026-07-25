@@ -1,4 +1,4 @@
-"""Thread-safe TTL caching utility for expensive queries."""
+"""In-memory TTL caching utility for expensive database queries."""
 
 import time
 from typing import Any
