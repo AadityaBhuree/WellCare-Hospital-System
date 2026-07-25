@@ -124,12 +124,13 @@ STATUS: ✅ COMPLETED
 - [x] Verify full test suite passes (158 tests passing)
 - [x] Commit and push to GitHub
 
-## PHASE 17: Navigation Highlight & Theme-Aware Analytics Polish ✅
+## PHASE 18: Enhanced Mousewheel Scroll Speed & Fluid Motion ✅
 STATUS: ✅ COMPLETED
-- [x] Add active navigation button highlighting (#1e85da) in header navigation menu
-- [x] Add theme-aware text, spine, and axis color adaptations for Matplotlib analytics charts
+- [x] Implement _enable_smooth_scrolling mousewheel acceleration handler in app.py
+- [x] Increase canvas scroll velocity (3x multiplier per mousewheel tick) for responsive, fluid scrolling
 - [x] Verify ruff lint, ruff format, mypy type check, and pytest test suite pass 100% (165 tests passing)
 - [x] Commit and push to GitHub
+
 
 
 

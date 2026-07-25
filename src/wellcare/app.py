@@ -196,6 +196,23 @@ class ClinicApp(ctk.CTk):
             corner_radius=0,
         )
         self.main_frame.pack(fill="both", expand=True, padx=0, pady=0)
+        self._enable_smooth_scrolling()
+
+    def _enable_smooth_scrolling(self) -> None:
+        """Bind enhanced mousewheel handler for fast, fluid scrolling."""
+
+        def _on_mouse_wheel(event: Any) -> str | None:
+            try:
+                canvas = getattr(self.main_frame, "_parent_canvas", None)
+                if canvas:
+                    delta = int(-1 * (event.delta / 120) * 3)
+                    canvas.yview_scroll(delta, "units")
+                    return "break"
+            except Exception:  # noqa: S110
+                pass
+            return None
+
+        self.bind_all("<MouseWheel>", _on_mouse_wheel)
 
     def _update_time(self) -> None:
         self.date_label.configure(
