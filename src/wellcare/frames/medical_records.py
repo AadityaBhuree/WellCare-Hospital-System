@@ -30,7 +30,7 @@ class MedicalRecordsFrame(ctk.CTkFrame):
         # Left Column: Add Consultation Record Form
         form_card = ctk.CTkFrame(
             self,
-            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
+            fg_color="#ffffff",
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,
@@ -95,7 +95,7 @@ class MedicalRecordsFrame(ctk.CTkFrame):
         # Right Column: Patient History Timeline
         list_card = ctk.CTkFrame(
             self,
-            fg_color=(Theme.SURFACE_LIGHT, Theme.SURFACE_DARK),
+            fg_color="#ffffff",
             corner_radius=Theme.RADIUS_CARD,
             border_width=1,
             border_color=Theme.BORDER_LIGHT,
