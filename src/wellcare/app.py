@@ -100,7 +100,7 @@ class ClinicApp(ctk.CTk):
         self.button_frame = ctk.CTkFrame(self, fg_color="#2a5298", height=50, corner_radius=0)
         self.button_frame.pack(side="top", fill="x")
 
-        # Dark Mode Switcher
+        # Dark Mode Switcher (Right Corner)
         self.mode_switch = ctk.CTkSwitch(
             self.button_frame,
             text="Dark Mode",
@@ -109,7 +109,11 @@ class ClinicApp(ctk.CTk):
             font=("Segoe UI", 12, "bold"),
             progress_color="#1e3c72",
         )
-        self.mode_switch.grid(column=0, row=0, padx=15, pady=10)
+        self.mode_switch.pack(side="right", padx=20, pady=10)
+
+        # Centered Navigation Buttons Container
+        self.nav_center_frame = ctk.CTkFrame(self.button_frame, fg_color="transparent")
+        self.nav_center_frame.pack(side="top", expand=True, pady=4)
 
         nav_args = {
             "font": ("Segoe UI", 13, "bold"),
@@ -120,67 +124,67 @@ class ClinicApp(ctk.CTk):
         }
 
         self.home_screen_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("HomeFrame"),
             text="HOME",
             **nav_args,
         )
         self.about_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("AboutFrame"),
             text="ABOUT",
             **nav_args,
         )
         self.login_screen_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("LoginFrame"),
             text="LOGIN",
             **nav_args,
         )
         self.dashboard_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("DashboardFrame"),
             text="DASHBOARD",
             **nav_args,
         )
         self.new_patient_record_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("PatientEntryFrame"),
             text="NEW PATIENT",
             **nav_args,
         )
         self.search_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("SearchFrame"),
             text="SEARCH",
             **nav_args,
         )
         self.appointments_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("AppointmentsFrame"),
             text="APPOINTMENTS",
             **nav_args,
         )
         self.doctors_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("DoctorsFrame"),
             text="DOCTORS",
             **nav_args,
         )
         self.billing_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("BillingFrame"),
             text="BILLING",
             **nav_args,
         )
         self.medical_records_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=lambda: self.show_frame_by_name("MedicalRecordsFrame"),
             text="RECORDS",
             **nav_args,
         )
         self.logout_button = ctk.CTkButton(
-            self.button_frame,
+            self.nav_center_frame,
             command=self._logout_action,
             text="LOGOUT",
             fg_color="#e25353",
@@ -227,27 +231,27 @@ class ClinicApp(ctk.CTk):
 
     def update_nav_buttons(self) -> None:
         """Show or hide top navigation menu options based on auth state and user role."""
-        # Always display HOME button at column 1
-        self.home_screen_button.grid(column=1, row=0, padx=10)
+        # Always display HOME button at column 0 in centered container
+        self.home_screen_button.grid(column=0, row=0, padx=6)
 
         if self.is_logged_in:
             self.login_screen_button.grid_forget()
-            c_idx = 2
+            c_idx = 1
 
             if self.current_user_role == "admin":
-                self.dashboard_button.grid(column=c_idx, row=0, padx=10)
+                self.dashboard_button.grid(column=c_idx, row=0, padx=6)
                 c_idx += 1
             else:
                 self.dashboard_button.grid_forget()
 
-            self.new_patient_record_button.grid(column=c_idx, row=0, padx=10)
-            self.search_button.grid(column=c_idx + 1, row=0, padx=10)
-            self.appointments_button.grid(column=c_idx + 2, row=0, padx=10)
-            self.doctors_button.grid(column=c_idx + 3, row=0, padx=10)
-            self.billing_button.grid(column=c_idx + 4, row=0, padx=10)
-            self.medical_records_button.grid(column=c_idx + 5, row=0, padx=10)
-            self.about_button.grid(column=c_idx + 6, row=0, padx=10)
-            self.logout_button.grid(column=c_idx + 7, row=0, padx=10)
+            self.new_patient_record_button.grid(column=c_idx, row=0, padx=6)
+            self.search_button.grid(column=c_idx + 1, row=0, padx=6)
+            self.appointments_button.grid(column=c_idx + 2, row=0, padx=6)
+            self.doctors_button.grid(column=c_idx + 3, row=0, padx=6)
+            self.billing_button.grid(column=c_idx + 4, row=0, padx=6)
+            self.medical_records_button.grid(column=c_idx + 5, row=0, padx=6)
+            self.about_button.grid(column=c_idx + 6, row=0, padx=6)
+            self.logout_button.grid(column=c_idx + 7, row=0, padx=6)
         else:
             self.dashboard_button.grid_forget()
             self.new_patient_record_button.grid_forget()
@@ -258,8 +262,8 @@ class ClinicApp(ctk.CTk):
             self.medical_records_button.grid_forget()
             self.logout_button.grid_forget()
 
-            self.about_button.grid(column=2, row=0, padx=10)
-            self.login_screen_button.grid(column=3, row=0, padx=10)
+            self.about_button.grid(column=1, row=0, padx=6)
+            self.login_screen_button.grid(column=2, row=0, padx=6)
 
     def _toggle_mode(self) -> None:
         mode = "Dark" if self.mode_switch.get() else "Light"

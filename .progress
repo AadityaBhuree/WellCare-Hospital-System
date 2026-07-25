@@ -124,12 +124,13 @@ STATUS: ✅ COMPLETED
 - [x] Verify full test suite passes (158 tests passing)
 - [x] Commit and push to GitHub
 
-## PHASE 18: Enhanced Mousewheel Scroll Speed & Fluid Motion ✅
+## PHASE 19: Centered Navigation Layout & Right-Corner Dark Mode Switch ✅
 STATUS: ✅ COMPLETED
-- [x] Implement _enable_smooth_scrolling mousewheel acceleration handler in app.py
-- [x] Increase canvas scroll velocity (3x multiplier per mousewheel tick) for responsive, fluid scrolling
-- [x] Verify ruff lint, ruff format, mypy type check, and pytest test suite pass 100% (165 tests passing)
+- [x] Create centered navigation container (nav_center_frame) to align all nav buttons in screen center
+- [x] Position Dark Mode switch on far right corner of the navigation bar
+- [x] Update test_app.py unit test assertions to match centered grid indices (165 tests passing)
 - [x] Commit and push to GitHub
+
 
 
 
