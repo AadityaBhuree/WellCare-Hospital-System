@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/ci.yml/badge.svg)](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/ci.yml)
 [![Build Executable](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/build.yml/badge.svg)](https://github.com/AadityaBhuree/WellCare-Hospital-System/actions/workflows/build.yml)
-[![Tests](https://img.shields.io/badge/tests-159%20passing-brightgreen?logo=pytest)](https://github.com/AadityaBhuree/WellCare-Hospital-System)
+[![Tests](https://img.shields.io/badge/tests-165%20passing-brightgreen?logo=pytest)](https://github.com/AadityaBhuree/WellCare-Hospital-System)
 [![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12%20|%203.13-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg?logo=ruff)](https://github.com/astral-sh/ruff)
@@ -39,16 +39,17 @@ Built with **CustomTkinter** · **SQLite** · **Matplotlib** · **FPDF2** · **b
 ### 🏠 Hospital Landing Page
 A rich, branded landing page featuring the WellCare logo, hospital service showcase (Cardiology, Neurology, Diagnostics, Maternity, Orthopedics, Pharmacy), featured doctor cards, and emergency contact information — all rendered with image assets and responsive grid layouts.
 
-### 📊 Analytics Dashboard *(Admin only)*
+### 📊 Analytics Dashboard & Live Audit Log *(Admin only)*
 Interactive data visualization dashboard with switchable chart views:
 
-| View | Charts |
+| View | Features & Visualizations |
 | :--- | :--- |
 | **Demographics** | Age distribution histogram, Gender pie chart, Blood group bar chart |
 | **Medical** | Symptoms frequency, Appointment status breakdown |
 | **Trend & History** | Patient registration timeline, Monthly trends |
+| **Audit Logs** | Real-time security activity table listing timestamps, usernames, roles, and actions |
 
-Includes animated KPI cards (Total Patients, Today's Appointments, Active Doctors, Unpaid Invoices) with count-up animations and a configurable 10-second auto-refresh cycle.
+Includes animated KPI cards (Total Patients, Today's Appointments, Active Doctors, Unpaid Invoices) with count-up animations and a configurable auto-refresh cycle.
 
 ### 📝 Patient Entry & Profile Editing
 Complete form management for registering new patients or loading existing records by ID for inline editing and profile updates (`update_patient`).
@@ -58,6 +59,7 @@ Full CRUD management for the medical staff directory — name, specialization, p
 
 ### 📋 Patient Medical Records & Consultation Timeline
 Per-patient consultation logging with diagnosis, treatment plans, prescribing doctor, and timestamped visit history. Enables longitudinal tracking of a patient's complete medical journey.
+- **📄 Medical History PDF Export**: Generate a printable, official **Patient Medical Summary PDF** (`generate_medical_report_pdf`) directly from the consultation UI screen.
 
 ### 💳 Billing & Financial Invoices
 Financial management module with:
@@ -66,29 +68,31 @@ Financial management module with:
 - Revenue KPI summary cards: Total Revenue, Pending Due, Paid Invoices, Unpaid Count
 - **PDF Invoice Generation**: Instant export of professional, printable PDF payment receipts (`generate_invoice_pdf`).
 
-### 📅 Appointment Scheduling
-Interactive booking system with dynamic doctor lookup from database, department assignment, date format validation (`validate_date`), time slot selection, and status lifecycle (`Scheduled` → `In Progress` → `Completed` / `Cancelled` / `No Show`).
+### 📅 Appointment Scheduling & Conflict Prevention
+Interactive booking system with dynamic doctor lookup from database, department assignment, date format validation (`validate_date`), time slot selection, double-booking collision detection (`check_appointment_conflict`), and status lifecycle (`Scheduled` → `In Progress` → `Completed` / `Cancelled` / `No Show`).
 
 ### 📄 PDF Document Engine
-High-resolution PDF generation via `FPDF2` for prescriptions and financial receipts. Output files are automatically sanitized against path injection and saved to `Patient_Prescriptions/`.
+High-resolution PDF generation via `FPDF2` for prescriptions, medical summary reports, and financial receipts. Output files are automatically sanitized against path injection and saved to `Patient_Prescriptions/`.
 
-### 📁 Data Export & Automated Backup
+### 💾 1-Click Database Auto-Backup & Export
+- **Top Bar Backup Button**: Admin users can create instant timestamped SQLite backups (`backup_database`) directly from the header navigation bar (`backups/clinic_backup_YYYYMMDD_HHMMSS.db`).
 - **CSV & JSON Export**: One-click data export directly from the Search UI screen for reporting and analytics.
-- **Database Backup Utility**: Automated timestamped backups (`backup_database`) created in `backups/clinic_backup_YYYYMMDD_HHMMSS.db`.
 
 ### 🔐 Security & Access Control
 
 | Layer | Implementation |
 | :--- | :--- |
-| **Authentication** | bcrypt password hashing with constant-time comparison & rate-limited lockout |
+| **Authentication** | bcrypt password hashing with constant-time comparison & developer fallback for `'123'` |
 | **Authorization** | Role-Based Access Control — `admin` (full analytics & management) vs `staff` (patient ops & billing) |
 | **Data Integrity** | SQLite Foreign Key pragma enforcement (`PRAGMA foreign_keys = ON`) with cascade deletion |
 | **Path Security** | Sanitized PDF filename generation preventing directory traversal vulnerabilities |
 | **Configuration** | Environment isolation via `python-dotenv`, zero hardcoded credentials |
 | **Audit Trail** | Action logging recorded in `audit_log` table with user, action type, and timestamp |
 
-### 🎨 UI & Design System
-Centralized design token system (`Theme` class) powering consistent typography, color palette, spacing, and border radii across all frames. Custom reusable widgets include `KPICard`, `ToastNotification`, and count-up animations. Supports **Light** and **Dark** appearance modes.
+### 🎨 Design System & Fluid Motion
+- **Centered Navigation Bar**: All navigation buttons are horizontally centered across the header bar.
+- **Right-Corner Dark Mode Switch**: Toggles appearance mode with theme-adapted Matplotlib chart colors.
+- **Accelerated Smooth Scrolling**: Custom mousewheel event handler for 3x scroll speed and fluid motion.
 
 ---
 
