@@ -192,6 +192,15 @@ class ClinicApp(ctk.CTk):
             hover_color="#c44545",
             cursor="hand2",
         )
+        self.backup_button = ctk.CTkButton(
+            self.nav_center_frame,
+            command=self._backup_db_action,
+            text="BACKUP DB",
+            fg_color="#27ae60",
+            font=("Segoe UI", 13, "bold"),
+            hover_color="#219653",
+            cursor="hand2",
+        )
 
         # ── Content Area ──────────────────────────────────────
         self.main_frame = ctk.CTkScrollableFrame(
@@ -224,6 +233,24 @@ class ClinicApp(ctk.CTk):
         )
         self.after(1000, self._update_time)
 
+    def _backup_db_action(self) -> None:
+        """Create a 1-click snapshot backup of the database."""
+        if not self.is_logged_in or self.current_user_role != "admin":
+            messagebox.showwarning(
+                "Access Denied", "Only administrators can perform database backups."
+            )
+            return
+
+        from src.wellcare.utils.backup import backup_database
+
+        backup_file = backup_database()
+        if backup_file:
+            messagebox.showinfo(
+                "Backup Success", f"Database snapshot created successfully:\n\n{backup_file}"
+            )
+        else:
+            messagebox.showerror("Backup Failed", "Could not create database backup.")
+
     def refresh_dashboard_if_open(self) -> None:
         """Trigger chart re-rendering if the active frame is DashboardFrame."""
         if isinstance(self.current_frame, DashboardFrame):
@@ -241,8 +268,10 @@ class ClinicApp(ctk.CTk):
             if self.current_user_role == "admin":
                 self.dashboard_button.grid(column=c_idx, row=0, padx=6)
                 c_idx += 1
+                self.backup_button.grid(column=c_idx + 7, row=0, padx=6)
             else:
                 self.dashboard_button.grid_forget()
+                self.backup_button.grid_forget()
 
             self.new_patient_record_button.grid(column=c_idx, row=0, padx=6)
             self.search_button.grid(column=c_idx + 1, row=0, padx=6)
@@ -251,9 +280,12 @@ class ClinicApp(ctk.CTk):
             self.billing_button.grid(column=c_idx + 4, row=0, padx=6)
             self.medical_records_button.grid(column=c_idx + 5, row=0, padx=6)
             self.about_button.grid(column=c_idx + 6, row=0, padx=6)
-            self.logout_button.grid(column=c_idx + 7, row=0, padx=6)
+            self.logout_button.grid(
+                column=c_idx + 8 if self.current_user_role == "admin" else c_idx + 7, row=0, padx=6
+            )
         else:
             self.dashboard_button.grid_forget()
+            self.backup_button.grid_forget()
             self.new_patient_record_button.grid_forget()
             self.search_button.grid_forget()
             self.appointments_button.grid_forget()
