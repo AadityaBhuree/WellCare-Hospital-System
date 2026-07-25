@@ -248,3 +248,15 @@ class TestDatabase:
 
         appt_id = appts[0][0]
         assert db.update_appointment_status(appt_id, AppointmentStatus.COMPLETED.value) is True
+
+    def test_audit_logging(self, db: Database) -> None:
+        db.log_action("user1", "TEST_ACTION", "Test details")
+        logs = db.get_recent_audit_logs(limit=10)
+        assert len(logs) >= 1
+        assert logs[0][1] == "user1"
+        assert logs[0][2] == "TEST_ACTION"
+        assert logs[0][3] == "Test details"
+
+    def test_get_appointment_status_counts(self, db: Database) -> None:
+        counts = db.get_appointment_status_counts()
+        assert isinstance(counts, list)

@@ -1,6 +1,5 @@
 """Search screen for finding and managing patient records."""
 
-from pathlib import Path
 from tkinter import messagebox
 from typing import Any
 

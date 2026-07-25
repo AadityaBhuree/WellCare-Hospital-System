@@ -236,10 +236,12 @@ class BillingFrame(ctk.CTkFrame):
 
         try:
             amt = float(amt_str)
-            if amt <= 0:
+            if amt <= 0 or amt > 1_000_000:
                 raise ValueError
         except ValueError:
-            messagebox.showerror("Error", "Billing amount must be a positive number.")
+            messagebox.showerror(
+                "Error", "Billing amount must be a positive number up to $1,000,000."
+            )
             return
 
         patient = self.controller.db.get_patient_by_id(int(pid_str))

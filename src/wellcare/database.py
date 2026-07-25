@@ -167,7 +167,6 @@ class Database:
                 "INSERT INTO audit_log(user_id, action, details) VALUES (?, ?, ?)",
                 (user_id, action, details),
             )
-            self.conn.commit()
         except Exception as e:
             logger.error("Failed to log audit action: %s", e)
 
@@ -188,6 +187,10 @@ class Database:
             )
             self.conn.commit()
             self._cache.invalidate()
+            patient_id = self.cur.lastrowid
+            self.log_action(
+                "system", "ADD_PATIENT", f"Added patient #{patient_id}: {data[0]} {data[1]}"
+            )
             return True
         except Exception as e:
             logger.error("Failed to add patient: %s", e)
@@ -271,7 +274,10 @@ class Database:
             )
             self.conn.commit()
             self._cache.invalidate()
-            return self.cur.rowcount > 0
+            if self.cur.rowcount > 0:
+                self.log_action("system", "UPDATE_PATIENT", f"Updated patient #{patient_id}")
+                return True
+            return False
         except Exception as e:
             logger.error("Failed to update patient %s: %s", patient_id, e)
             return False
@@ -302,7 +308,10 @@ class Database:
             self.cur.execute("DELETE FROM patients WHERE id = ?", (patient_id,))
             self.conn.commit()
             self._cache.invalidate()
-            return self.cur.rowcount > 0
+            if self.cur.rowcount > 0:
+                self.log_action("system", "DELETE_PATIENT", f"Deleted patient #{patient_id}")
+                return True
+            return False
         except Exception as e:
             logger.error("Failed to delete patient %s: %s", patient_id, e)
             return False
@@ -399,6 +408,12 @@ class Database:
                 ),
             )
             self.conn.commit()
+            appt_id = self.cur.lastrowid
+            self.log_action(
+                "system",
+                "ADD_APPOINTMENT",
+                f"Appt #{appt_id} created for patient #{appt.patient_id}",
+            )
             return True
         except Exception as e:
             logger.error("Failed to add appointment: %s", e)
@@ -440,7 +455,12 @@ class Database:
                 (status, appt_id),
             )
             self.conn.commit()
-            return self.cur.rowcount > 0
+            if self.cur.rowcount > 0:
+                self.log_action(
+                    "system", "UPDATE_APPOINTMENT", f"Appt #{appt_id} status -> {status}"
+                )
+                return True
+            return False
         except Exception as e:
             logger.error("Failed to update appointment %s status: %s", appt_id, e)
             return False
@@ -472,6 +492,10 @@ class Database:
                 (name, specialization, phone, email, available_days),
             )
             self.conn.commit()
+            doc_id = self.cur.lastrowid
+            self.log_action(
+                "system", "ADD_DOCTOR", f"Added doctor #{doc_id}: {name} ({specialization})"
+            )
             logger.info("Doctor added successfully: %s (%s)", name, specialization)
             return True
         except Exception as err:
@@ -516,7 +540,12 @@ class Database:
                 (1 if is_active else 0, doctor_id),
             )
             self.conn.commit()
-            return self.cur.rowcount > 0
+            if self.cur.rowcount > 0:
+                self.log_action(
+                    "system", "TOGGLE_DOCTOR", f"Doctor #{doctor_id} active status -> {is_active}"
+                )
+                return True
+            return False
         except Exception as err:
             logger.error("Error toggling status for doctor %d: %s", doctor_id, err)
             return False
@@ -543,6 +572,9 @@ class Database:
             )
             self.conn.commit()
             bill_id = self.cur.lastrowid
+            self.log_action(
+                "system", "CREATE_BILL", f"Bill #{bill_id} created for patient #{bill.patient_id}"
+            )
             logger.info("Created bill #%s for patient ID %s", bill_id, bill.patient_id)
             return bill_id
         except Exception as err:
@@ -577,7 +609,12 @@ class Database:
                 (status, bill_id),
             )
             self.conn.commit()
-            return self.cur.rowcount > 0
+            if self.cur.rowcount > 0:
+                self.log_action(
+                    "system", "UPDATE_BILL_STATUS", f"Bill #{bill_id} status -> {status}"
+                )
+                return True
+            return False
         except Exception as err:
             logger.error("Error updating bill #%d status: %s", bill_id, err)
             return False
@@ -637,6 +674,11 @@ class Database:
             )
             self.conn.commit()
             record_id = self.cur.lastrowid
+            self.log_action(
+                "system",
+                "ADD_MEDICAL_RECORD",
+                f"Record #{record_id} saved for patient #{patient_id}",
+            )
             logger.info("Added medical record #%s for patient #%s", record_id, patient_id)
             return record_id
         except Exception as err:
@@ -659,4 +701,17 @@ class Database:
             params.append(patient_id)
         query += " ORDER BY m.id DESC"
         self.cur.execute(query, params)
+        return self.cur.fetchall()
+
+    def get_recent_audit_logs(self, limit: int = 50) -> list[tuple[Any, ...]]:
+        """Retrieve recent system audit trail logs."""
+        if self.cur is None:
+            return []
+        self.cur.execute(
+            """
+            SELECT id, user_id, action, details, created_at
+            FROM audit_log ORDER BY id DESC LIMIT ?
+            """,
+            (limit,),
+        )
         return self.cur.fetchall()

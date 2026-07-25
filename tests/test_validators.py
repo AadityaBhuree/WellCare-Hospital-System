@@ -6,8 +6,20 @@ from src.wellcare.utils.validators import (
     validate_email,
     validate_mobile,
     validate_patient_input,
+    validate_text_length,
     validate_weight,
 )
+
+
+class TestValidateTextLength:
+    """Tests for validate_text_length."""
+
+    def test_within_limit(self) -> None:
+        assert validate_text_length("Hello", max_len=10, field_name="Name") is None
+
+    def test_exceeds_limit(self) -> None:
+        err = validate_text_length("Super long text", max_len=5, field_name="Name")
+        assert err == "Name exceeds maximum length of 5 characters."
 
 
 class TestValidateDate:

@@ -4,16 +4,27 @@ import datetime
 import re
 
 
+def validate_text_length(text: str, max_len: int = 250, field_name: str = "Field") -> str | None:
+    """Validate string length against maximum threshold. Returns error message or None."""
+    if text and len(text) > max_len:
+        return f"{field_name} exceeds maximum length of {max_len} characters."
+    return None
+
+
 def validate_mobile(mobile: str) -> str | None:
     """Validate mobile number. Returns error message or None."""
     if not mobile.isdigit() or len(mobile) < 10:
         return "Mobile No must be at least 10 digits."
+    if len(mobile) > 15:
+        return "Mobile No must not exceed 15 digits."
     return None
 
 
 def validate_email(email: str) -> str | None:
     """Validate email format. Returns error message or None."""
     if email:
+        if len(email) > 100:
+            return "Email address exceeds maximum length of 100 characters."
         pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
         if not re.match(pattern, email):
             return "Invalid Email format."
