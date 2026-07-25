@@ -283,7 +283,26 @@ class ClinicApp(ctk.CTk):
             messagebox.showwarning("Access Denied", "Please login first.")
             return self.show_frame_by_name("LoginFrame")
 
-        if self.current_frame:
+        # ── Highlight Active Navigation Button ─────────────────
+        nav_button_map = {
+            "HomeFrame": self.home_screen_button,
+            "AboutFrame": self.about_button,
+            "LoginFrame": self.login_screen_button,
+            "DashboardFrame": self.dashboard_button,
+            "PatientEntryFrame": self.new_patient_record_button,
+            "SearchFrame": self.search_button,
+            "AppointmentsFrame": self.appointments_button,
+            "DoctorsFrame": self.doctors_button,
+            "BillingFrame": self.billing_button,
+            "MedicalRecordsFrame": self.medical_records_button,
+        }
+        for f_name, btn in nav_button_map.items():
+            if f_name == frame_class_name:
+                btn.configure(fg_color="#1e85da")
+            else:
+                btn.configure(fg_color="transparent")
+
+        if self.current_frame is not None:
             self.current_frame.destroy()
 
         self.current_frame = frame_class(master=self.main_frame, controller=self)

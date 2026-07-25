@@ -124,14 +124,13 @@ STATUS: ✅ COMPLETED
 - [x] Verify full test suite passes (158 tests passing)
 - [x] Commit and push to GitHub
 
-## PHASE 16: Header Theme, Persistent HOME Button, White Background & Smooth Scroll Optimization ✅
+## PHASE 17: Navigation Highlight & Theme-Aware Analytics Polish ✅
 STATUS: ✅ COMPLETED
-- [x] Redesign header and navigation bar with royal navy #1e3c72 and sleek #132743 theme styling
-- [x] Fix update_nav_buttons so HOME button is persistently visible when logged in or logged out
-- [x] Set white background (#ffffff) across main content container and lower_frame doctor showcase
-- [x] Optimize logo image scaling (300x300) for fast repaint performance and silky smooth scrolling
-- [x] Verify full test suite passes (165 tests passing)
+- [x] Add active navigation button highlighting (#1e85da) in header navigation menu
+- [x] Add theme-aware text, spine, and axis color adaptations for Matplotlib analytics charts
+- [x] Verify ruff lint, ruff format, mypy type check, and pytest test suite pass 100% (165 tests passing)
 - [x] Commit and push to GitHub
+
 
 
 

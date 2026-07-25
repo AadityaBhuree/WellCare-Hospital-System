@@ -182,6 +182,11 @@ class DashboardFrame(ctk.CTkFrame):
         for ax in (ax1, ax2):
             ax.set_facecolor(bg_col)
             ax.tick_params(colors=text_col)
+            ax.xaxis.label.set_color(text_col)
+            ax.yaxis.label.set_color(text_col)
+            ax.title.set_color(text_col)
+            for spine in ax.spines.values():
+                spine.set_color("#64748b" if ctk.get_appearance_mode() == "Dark" else "#cbd5e1")
 
         canvas = FigureCanvasTkAgg(fig, master=self.chart_container)
         canvas.draw()
