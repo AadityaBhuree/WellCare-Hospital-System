@@ -179,3 +179,103 @@ def generate_invoice_pdf(
     except Exception as e:
         logger.error("Invoice PDF generation failed: %s", e)
         return None
+
+
+def generate_medical_report_pdf(
+    patient_name: str,
+    patient_id: int | str,
+    records: list[dict[str, str]],
+    output_dir: str | Path | None = None,
+) -> str | None:
+    """Generate a comprehensive Patient Medical History PDF Report."""
+    pdf = FPDF()
+    pdf.add_page()
+
+    # Header
+    pdf.set_font("Arial", "B", 22)
+    pdf.set_text_color(30, 60, 114)
+    pdf.cell(
+        200,
+        12,
+        text="WellCare Hospital - Patient Medical Summary",
+        new_x="LOWER",
+        new_y="NEXT",
+        align="C",
+    )
+
+    pdf.set_font("Arial", "I", 11)
+    pdf.set_text_color(100, 100, 100)
+    pdf.cell(
+        200,
+        8,
+        text=f"Generated on {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}",
+        new_x="LOWER",
+        new_y="NEXT",
+        align="C",
+    )
+    pdf.ln(8)
+
+    # Patient Meta
+    pdf.set_font("Arial", "B", 13)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(
+        200,
+        8,
+        text=f"Patient Record: {patient_name} (ID: #{patient_id})",
+        new_x="LOWER",
+        new_y="NEXT",
+        align="L",
+        border="B",
+    )
+    pdf.ln(6)
+
+    # Records List
+    if not records:
+        pdf.set_font("Arial", "I", 11)
+        pdf.cell(
+            200, 10, text="No medical consultation records logged.", new_x="LOWER", new_y="NEXT"
+        )
+    else:
+        for idx, rec in enumerate(records, 1):
+            pdf.set_font("Arial", "B", 11)
+            dname = rec.get("doctor_name", "Staff")
+            c_date = rec.get("date", "N/A")
+            pdf.cell(
+                200,
+                7,
+                text=f"Consultation #{idx} | Date: {c_date} | Doctor: {dname}",
+                new_x="LOWER",
+                new_y="NEXT",
+            )
+            pdf.set_font("Arial", "", 10)
+            diag = rec.get("diagnosis", "")
+            treat = rec.get("treatment", "")
+            notes = rec.get("notes", "")
+            text_block = f"Diagnosis: {diag}\nTreatment: {treat}\nNotes: {notes}"
+            pdf.multi_cell(0, 6, text=text_block, border=1)
+            pdf.ln(4)
+
+    pdf.ln(10)
+    pdf.set_font("Arial", "I", 9)
+    pdf.cell(
+        200,
+        8,
+        text="Confidential Medical Document - WellCare Health Information System",
+        new_x="LOWER",
+        new_y="NEXT",
+        align="C",
+    )
+
+    output_path = Path(output_dir) if output_dir else PRESCRIPTIONS_DIR
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    safe_name = _sanitize_name(patient_name)
+    filename = output_path / f"Medical_Report_{patient_id}_{safe_name}.pdf"
+
+    try:
+        pdf.output(str(filename))
+        logger.info("Medical Report PDF generated: %s", filename)
+        return str(filename)
+    except Exception as e:
+        logger.error("Medical Report PDF generation failed: %s", e)
+        return None
