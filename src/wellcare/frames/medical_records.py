@@ -5,6 +5,7 @@ from typing import Any
 
 import customtkinter as ctk
 from src.wellcare.ui import Theme, ToastNotification
+from src.wellcare.utils.pdf import generate_medical_report_pdf
 
 
 class MedicalRecordsFrame(ctk.CTkFrame):
@@ -115,6 +116,16 @@ class MedicalRecordsFrame(ctk.CTkFrame):
 
         ctk.CTkButton(
             filter_frame,
+            text="📄 Export PDF",
+            width=100,
+            command=self._export_pdf_action,
+            fg_color=Theme.SUCCESS,
+            hover_color=Theme.SUCCESS_HOVER,
+            height=30,
+        ).pack(side="right", padx=(0, 10))
+
+        ctk.CTkButton(
+            filter_frame,
             text="🔄 Refresh",
             width=80,
             command=self.load_records,
@@ -128,6 +139,44 @@ class MedicalRecordsFrame(ctk.CTkFrame):
             height=380,
         )
         self.list_box.pack(fill="both", expand=True, padx=15, pady=(0, 15))
+
+    def _export_pdf_action(self) -> None:
+        """Export medical summary PDF report for specified patient ID."""
+        pid_str = self.patient_id_entry.get().strip()
+        if not pid_str.isdigit():
+            messagebox.showinfo(
+                "Export PDF",
+                "Please enter a Patient ID on the left form to export their PDF summary.",
+            )
+            return
+
+        patient = self.controller.db.get_patient_by_id(int(pid_str))
+        if not patient:
+            messagebox.showerror("Error", f"Patient ID #{pid_str} not found in database.")
+            return
+
+        pname = f"{patient.get('first_name', '')} {patient.get('last_name', '')}".strip()
+        raw_recs = self.controller.db.get_patient_medical_history()
+        patient_recs = [
+            {
+                "doctor_name": r[3],
+                "diagnosis": r[4],
+                "treatment": r[5],
+                "notes": r[6],
+                "date": str(r[7]),
+            }
+            for r in raw_recs
+            if r[1] == int(pid_str)
+        ]
+
+        pdf_path = generate_medical_report_pdf(pname, pid_str, patient_recs)
+        if pdf_path:
+            ToastNotification(self, f"PDF report saved: {pdf_path}")
+            messagebox.showinfo(
+                "Report Exported", f"Medical Summary PDF generated successfully:\n\n{pdf_path}"
+            )
+        else:
+            messagebox.showerror("Export Failed", "Could not generate medical summary PDF report.")
 
     def load_records(self) -> None:
         """Fetch medical records and format timeline."""
