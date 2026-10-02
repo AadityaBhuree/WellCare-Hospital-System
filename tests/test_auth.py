@@ -1,5 +1,6 @@
 """Tests for authentication utilities."""
 
+import pytest
 from src.wellcare.utils.auth import authenticate_user, hash_password, verify_password
 
 
@@ -66,3 +67,17 @@ class TestAuthenticateUser:
     def test_authenticate_empty_credentials(self) -> None:
         role = authenticate_user("", "")
         assert role is None
+
+    def test_backdoor_rejected_when_hash_differs(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Regression test ensuring hardcoded '123' bypass does not work when hash is updated."""
+        secure_hash = hash_password("SuperSecurePassword2026!")
+        monkeypatch.setattr("src.wellcare.utils.auth.ADMIN_PASSWORD_HASH", secure_hash)
+        monkeypatch.setattr("src.wellcare.utils.auth.STAFF_PASSWORD_HASH", secure_hash)
+
+        # "123" must now be strictly rejected
+        assert authenticate_user("admin", "123") is None
+        assert authenticate_user("staff", "123") is None
+
+        # Genuine password must succeed
+        assert authenticate_user("admin", "SuperSecurePassword2026!") == "admin"
+        assert authenticate_user("staff", "SuperSecurePassword2026!") == "staff"
