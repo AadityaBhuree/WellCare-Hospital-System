@@ -82,7 +82,7 @@ High-resolution PDF generation via `FPDF2` for prescriptions, medical summary re
 
 | Layer | Implementation |
 | :--- | :--- |
-| **Authentication** | bcrypt password hashing with constant-time comparison & developer fallback for `'123'` |
+| **Authentication** | bcrypt password hashing with timing-safe comparison (`hmac.compare_digest`), rate limiting & strict credential validation |
 | **Authorization** | Role-Based Access Control — `admin` (full analytics & management) vs `staff` (patient ops & billing) |
 | **Data Integrity** | SQLite Foreign Key pragma enforcement (`PRAGMA foreign_keys = ON`) with cascade deletion |
 | **Path Security** | Sanitized PDF filename generation preventing directory traversal vulnerabilities |
