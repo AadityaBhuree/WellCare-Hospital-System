@@ -5,6 +5,7 @@ from typing import Any
 
 import customtkinter as ctk
 from src.wellcare.ui import Theme, ToastNotification
+from src.wellcare.utils.async_tasks import run_async
 from src.wellcare.utils.pdf import generate_medical_report_pdf
 
 
@@ -169,14 +170,31 @@ class MedicalRecordsFrame(ctk.CTkFrame):
             if r[1] == int(pid_str)
         ]
 
-        pdf_path = generate_medical_report_pdf(pname, pid_str, patient_recs)
-        if pdf_path:
-            ToastNotification(self, f"PDF report saved: {pdf_path}")
-            messagebox.showinfo(
-                "Report Exported", f"Medical Summary PDF generated successfully:\n\n{pdf_path}"
+        def _on_export_success(pdf_path: str | None) -> None:
+            if pdf_path:
+                ToastNotification(self, f"PDF report saved: {pdf_path}")
+                messagebox.showinfo(
+                    "Report Exported", f"Medical Summary PDF generated successfully:\n\n{pdf_path}"
+                )
+            else:
+                messagebox.showerror(
+                    "Export Failed", "Could not generate medical summary PDF report."
+                )
+
+        def _on_export_error(exc: Exception) -> None:
+            messagebox.showerror(
+                "Export Failed", f"Could not generate medical summary PDF report: {exc}"
             )
-        else:
-            messagebox.showerror("Export Failed", "Could not generate medical summary PDF report.")
+
+        run_async(
+            generate_medical_report_pdf,
+            pname,
+            pid_str,
+            patient_recs,
+            on_success=_on_export_success,
+            on_error=_on_export_error,
+            master_widget=self,
+        )
 
     def load_records(self) -> None:
         """Fetch medical records and format timeline."""

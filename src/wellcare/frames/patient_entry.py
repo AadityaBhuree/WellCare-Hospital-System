@@ -5,6 +5,7 @@ from typing import Any, cast
 import customtkinter as ctk
 from src.wellcare.logger import logger
 from src.wellcare.ui import Theme, ToastNotification
+from src.wellcare.utils.async_tasks import run_async
 from src.wellcare.utils.pdf import generate_prescription
 from src.wellcare.utils.validators import validate_patient_input
 
@@ -239,16 +240,32 @@ class PatientEntryFrame(ctk.CTkFrame):
 
         save_success = self._save_action()
         if save_success:
-            result = generate_prescription(first, last, age, mobile)
-            if result:
-                logger.info("PDF saved to: %s", result)
-                ToastNotification(
-                    self.controller,
-                    "PDF Prescription generated successfully!",
-                    toast_type="info",
-                )
-            else:
+
+            def _on_prescription_success(result: str | None) -> None:
+                if result:
+                    logger.info("PDF saved to: %s", result)
+                    ToastNotification(
+                        self.controller,
+                        "PDF Prescription generated successfully!",
+                        toast_type="info",
+                    )
+                else:
+                    self._display_status("Saved DB, but PDF failed.", "red")
+
+            def _on_prescription_error(exc: Exception) -> None:
+                logger.error("Prescription generation failed: %s", exc)
                 self._display_status("Saved DB, but PDF failed.", "red")
+
+            run_async(
+                generate_prescription,
+                first,
+                last,
+                age,
+                mobile,
+                on_success=_on_prescription_success,
+                on_error=_on_prescription_error,
+                master_widget=self,
+            )
 
     def _clear_entries(self, keep_edit_id: bool = False) -> None:
         if not keep_edit_id:

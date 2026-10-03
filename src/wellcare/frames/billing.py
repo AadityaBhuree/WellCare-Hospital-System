@@ -6,6 +6,7 @@ from typing import Any
 import customtkinter as ctk
 from src.wellcare.models import Bill, PaymentStatus
 from src.wellcare.ui import KPICard, Theme, ToastNotification
+from src.wellcare.utils.async_tasks import run_async
 from src.wellcare.utils.pdf import generate_invoice_pdf
 
 
@@ -296,15 +297,13 @@ class BillingFrame(ctk.CTkFrame):
         bills = self.controller.db.get_bills()
         target_bill = next((b for b in bills if b[0] == bid), None)
 
-        if target_bill:
-            _, _pid, pname, _aid, amount, desc, status, _cat = target_bill
-            pdf_path = generate_invoice_pdf(
-                bill_id=bid,
-                patient_name=pname or "Unknown Patient",
-                amount=amount,
-                description=desc or "",
-                status=status or "Pending",
-            )
+        if not target_bill:
+            messagebox.showerror("Error", f"Invoice #{bid} not found in database.")
+            return
+
+        _, _pid, pname, _aid, amount, desc, status, _cat = target_bill
+
+        def _on_pdf_success(pdf_path: str | None) -> None:
             if pdf_path:
                 ToastNotification(
                     self.controller, f"PDF Invoice generated for #{bid}!", toast_type="success"
@@ -312,5 +311,18 @@ class BillingFrame(ctk.CTkFrame):
                 messagebox.showinfo("Invoice Generated", f"Invoice saved to {pdf_path}")
             else:
                 messagebox.showerror("Error", "Failed to generate PDF Invoice.")
-        else:
-            messagebox.showerror("Error", f"Invoice #{bid} not found in database.")
+
+        def _on_pdf_error(exc: Exception) -> None:
+            messagebox.showerror("Error", f"Failed to generate PDF Invoice: {exc}")
+
+        run_async(
+            generate_invoice_pdf,
+            bill_id=bid,
+            patient_name=pname or "Unknown Patient",
+            amount=amount,
+            description=desc or "",
+            status=status or "Pending",
+            on_success=_on_pdf_success,
+            on_error=_on_pdf_error,
+            master_widget=self,
+        )
