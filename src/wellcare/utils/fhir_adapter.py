@@ -444,7 +444,7 @@ class FHIRAdapter:
                         message="Failed to insert patient into database",
                         errors=["Database insertion error"],
                     )
-                patient_id = int(db.cur.lastrowid or 0)
+                patient_id = db.cur.lastrowid or 0
             else:
                 patient_id = existing_patient_id
 

@@ -231,6 +231,7 @@ class TestFHIRAdapter:
         # Ingest to populate data
         res = FHIRAdapter.ingest_bundle(sample_fhir_bundle, db=test_db)
         assert res.success is True
+        assert res.patient_id is not None
         patient_id = res.patient_id
 
         # Export back to FHIR
